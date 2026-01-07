@@ -116,22 +116,6 @@ public class Host {
         }
     }
 
-    public List<String> getPlayers() {
-        return players;
-    }
-
-    public Space getGameSpace() {
-        return gameSpace;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
     /**
      * Stopper serveren og lukker alle forbindelser.
      */
