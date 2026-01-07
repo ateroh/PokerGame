@@ -13,7 +13,7 @@ public class Main extends Application {
     
     @Override
     public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/src/main/resources/fxml_files/PokerMenu.fxml"));
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml_files/PokerMenu.fxml"));
         Parent root = loader.load();
     
         // Få adgang til MenuController
