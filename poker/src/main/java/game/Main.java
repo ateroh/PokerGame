@@ -2,7 +2,7 @@ package game;
 
 
 import game.controller.MenuController;
-
+import game.controller.SceneManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,21 +12,14 @@ import javafx.stage.Stage;
 public class Main extends Application {
     
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml_files/PokerMenu.fxml"));
-        Parent root = loader.load();
 
-        // Få adgang til MenuController
-        MenuController menuController = loader.getController();
+    public void start(Stage stage) throws Exception {
+        SceneManager sceneManager = SceneManager.getInstance();
+        sceneManager.setStage(stage);
 
-        // Kald start for at indhente input og opsætte spillet
-        menuController.start();
-
-        Scene scene = new Scene(root);
-        primaryStage.setTitle("Poker");
-        primaryStage.setScene(scene);
-
-        primaryStage.show();
+        sceneManager.switchScene("menu"); // initial scene
+        stage.setTitle("Poker Game");
+        stage.show();
     }
 
     public static void main(String[] args) {
