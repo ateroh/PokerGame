@@ -6,7 +6,9 @@ import game.players.PlayerClient;
 import java.io.IOException;
 
 /**
+ * Du skal være i poker-mappen for at køre denne test. cd poker
  * Terminal 1: mvn exec:java -Dexec.mainClass="game.test.ConnectionTest" -Dexec.args="host"
+
  * Terminal 2: mvn exec:java -Dexec.mainClass="game.test.ConnectionTest" -Dexec.args="client"
  */
 public class ConnectionTest {

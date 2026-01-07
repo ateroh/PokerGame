@@ -15,10 +15,10 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml_files/PokerMenu.fxml"));
         Parent root = loader.load();
-    
+
         // Få adgang til MenuController
         MenuController menuController = loader.getController();
-    
+
         // Kald start for at indhente input og opsætte spillet
         menuController.start();
 
