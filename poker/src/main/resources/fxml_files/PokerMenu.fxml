@@ -12,12 +12,12 @@
             <Font name="Broadway" size="81.0" />
          </font>
       </Text>
-      <Button fx:id="createButton" layoutX="155.0" layoutY="165.0" mnemonicParsing="false" prefHeight="83.0" prefWidth="289.0" style="-fx-background-color: #2e4d3e;" text="CREATE" textFill="#b1b739">
+      <Button fx:id="createButton" layoutX="155.0" layoutY="165.0" mnemonicParsing="false" onAction="#onCreateClicked" prefHeight="83.0" prefWidth="289.0" style="-fx-background-color: #2e4d3e;" text="CREATE" textFill="#b1b739">
          <font>
             <Font name="Bernard MT Condensed" size="32.0" />
          </font>
       </Button>
-      <Button fx:id="joinButton" layoutX="155.0" layoutY="264.0" mnemonicParsing="false" prefHeight="83.0" prefWidth="289.0" style="-fx-background-color: #2e4d3e;" text="JOIN" textFill="#b1b739">
+      <Button fx:id="joinButton" layoutX="155.0" layoutY="264.0" mnemonicParsing="false" onAction="#onJoinClicked" prefHeight="83.0" prefWidth="289.0" style="-fx-background-color: #2e4d3e;" text="JOIN" textFill="#b1b739">
          <font>
             <Font name="Bernard MT Condensed" size="32.0" />
          </font>
