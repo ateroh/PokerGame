@@ -11,6 +11,7 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 
 import game.model.DeckModel;
+import game.model.GameModel;
 
 /**
  * Host repræsenterer serveren i poker-spillet.
@@ -32,7 +33,7 @@ public class Host {
     // Det delte tuple space hvor al kommunikation sker
     // Både host og clients læser/skriver til dette space
     private Space gameSpace;
-
+    private GameModel game;
     // Liste over alle spillere der er joined (inkl. host)
     private List<String> players = new ArrayList<>();
 
@@ -43,13 +44,11 @@ public class Host {
     private Space deckSpace;
     private DeckModel deck;
 
+    // game space
+   
+
     // Flag til at stoppe listener-tråden
     private boolean running = false;
-
-    //definer kort
-    // Card definitions
-    private static final String[] SUITS = {"hearts", "diamonds", "clubs", "spades"};
-    private static final String[] RANKS = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
 
     public Host(int port, String username) {
         this.port = port;
@@ -83,8 +82,9 @@ public class Host {
         repository.add("deck", deckSpace);
         
         // init dick
-        initializeDeck();
+        initModels();
 
+        //maaske flyt til initmodels
         // Registrer host som den første spiller
         gameSpace.put("player", username, "host");
         players.add(username);
@@ -134,13 +134,15 @@ public class Host {
     }
 
 
-    private void initializeDeck() throws InterruptedException {
+    private void initModels() throws InterruptedException {
         deck =  new DeckModel(deckSpace);
         deck.initialize();
-
         System.out.println("deck initialized");
-    }
 
+        // virker ikke (gameModel)
+        //game = new gameModel(gameSpace, deck);
+    }
+    
     /**
      * Stopper serveren og lukker alle forbindelser.
      */
@@ -168,5 +170,8 @@ public class Host {
     
     public List<String> getPlayers() {
         return new ArrayList<>(players);
+    }
+    public GameModel getGame() {
+        return game;
     }
 }

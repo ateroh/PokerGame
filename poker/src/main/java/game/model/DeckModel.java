@@ -34,7 +34,7 @@ public class DeckModel {
 
     
     // draw card
-    public List<String> drawCard() throws InterruptedException {
+    public Card drawCard() throws InterruptedException {
         Object[] card = deckSpace.get(
             new ActualField("card"),
             new FormalField(String.class),
@@ -42,12 +42,13 @@ public class DeckModel {
         );
       
         if (card == null) {
-            throw new IllegalStateException("Deck is empty!");
+            throw new IllegalStateException("ikke okay");
         }
-        List<String> result = new ArrayList<>();
-        result.add((String) card[1]);
-        result.add((String) card[2]);
-        return result;
+
+        String suit = (String) card[1];
+        String rank = (String) card[2];
+
+        return new Card(suit, rank);
     }
     
     public int cardsRemaining() {
