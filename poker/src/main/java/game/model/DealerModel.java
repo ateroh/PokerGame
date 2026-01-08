@@ -19,13 +19,9 @@ public class DealerModel {
             Card card1 = deck.drawCard();
             Card card2 = deck.drawCard();
 
-            try {
-                gameSpace.put("dealtCards",player,card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank());
-            } catch (InterruptedException ex) {
-                System.getLogger(DealerModel.class.getName()).log(System.Logger.Level.ERROR, (String) null, ex);
-            }
+            gameSpace.put("dealtCards",player,card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank());
+            
         }
-        
     }
 
     public void dealFlop() {
@@ -48,4 +44,8 @@ public class DealerModel {
 
     }
     
+    public int cardsRemaining() {
+        return deck.cardsRemaining();
+    }
+
 }

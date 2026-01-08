@@ -1,3 +1,4 @@
+game\model\Card.class
 game\model\PlayerModel.class
 game\controller\ActionController.class
 game\view\MenuView.class
@@ -15,4 +16,5 @@ game\players\PlayerClient.class
 game\players\Host.class
 game\model\HandModel.class
 game\model\DeckModel.class
+game\model\DealerModel.class
 game\model\CommunityCardsModel.class
