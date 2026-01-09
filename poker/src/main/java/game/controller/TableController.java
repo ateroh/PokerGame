@@ -106,12 +106,36 @@ public class TableController implements Initializable {
             }
         }
 
-        // Rotate the list so that the current player is at position 1 (player2)
+        // Rotate the list so that the current player is at position 1 (player2), with clockwise positioning
+        // Slot 0 (player1) = sidste spiller clockwise (modsat dig) - kun hvis 4 spillere
+        // Slot 1 (player2) = dig selv
+        // Slot 2 (player3) = næste spiller clockwise - kun hvis 2+ spillere
+        // Slot 3 (player4) = næste spiller clockwise efter det - kun hvis 3+ spillere
         List<PlayerInfo> rotatedPlayers = new ArrayList<>();
         if (meIndex != -1) {
-            int start = (meIndex - 1 + players.size()) % players.size();
-            for (int i = 0; i < players.size(); i++) {
-                rotatedPlayers.add(players.get((start + i) % players.size()));
+            int n = players.size();
+
+            // Slot 0: kun vis hvis der er 4 spillere (spilleren før dig), ellers null placeholder
+            if (n >= 4) {
+                int slot0Index = (meIndex - 1 + n) % n;
+                rotatedPlayers.add(players.get(slot0Index));
+            } else {
+                rotatedPlayers.add(null); // Placeholder for tom plads
+            }
+
+            // Slot 1: dig selv (altid)
+            rotatedPlayers.add(players.get(meIndex));
+
+            // Slot 2: næste spiller clockwise (kun hvis 2+ spillere)
+            if (n >= 2) {
+                int slot2Index = (meIndex + 1) % n;
+                rotatedPlayers.add(players.get(slot2Index));
+            }
+
+            // Slot 3: spilleren 2 efter dig (kun hvis 3+ spillere)
+            if (n >= 3) {
+                int slot3Index = (meIndex + 2) % n;
+                rotatedPlayers.add(players.get(slot3Index));
             }
         } else {
             rotatedPlayers.addAll(players);
@@ -120,7 +144,7 @@ public class TableController implements Initializable {
         currentPlayers = rotatedPlayers;
 
         for (int i = 0; i < playerSlots.length; i++) {
-            if (i < rotatedPlayers.size()) {
+            if (i < rotatedPlayers.size() && rotatedPlayers.get(i) != null) {
                 PlayerInfo player = rotatedPlayers.get(i);
                 String displayName = player.name;
 
