@@ -1,36 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.ListView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" style="-fx-background-color: #2e4d3e;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.controller.TableController">
    <children>
-      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#35654d" height="312.0" layoutX="36.0" layoutY="44.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="400.0" />
-
-      <!-- Spillerliste -->
-      <Text fill="#d4db51" layoutX="460.0" layoutY="70.0" text="PLAYERS">
-         <font>
-            <Font name="Broadway" size="20.0" />
-         </font>
-      </Text>
-      <ListView fx:id="playerListView" layoutX="450.0" layoutY="80.0" prefHeight="230.0" prefWidth="140.0" style="-fx-background-color: #35654d; -fx-control-inner-background: #35654d;" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#35654d" height="299.0" layoutX="48.0" layoutY="51.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="505.0" />
 
       <!-- Status tekst -->
-      <Text fx:id="statusText" fill="#d4db51" layoutX="50.0" layoutY="380.0" text="Venter...">
+      <Text fx:id="statusText" fill="#d4db51" layoutX="235.0" layoutY="205.0" text="Venter..." textAlignment="CENTER" wrappingWidth="127.2874755859375">
          <font>
             <Font name="Berlin Sans FB" size="14.0" />
          </font>
       </Text>
 
       <!-- Back knap -->
-      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: #2e4d3e;" text="BACK" textFill="#d4db51" onAction="#onBackClicked">
+      <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBackClicked" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="BACK" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
+      <Circle layoutX="301.0" layoutY="51.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="301.0" layoutY="350.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="50.0" layoutY="200.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="553.0" layoutY="200.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="301.0" layoutY="17.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="50.0" layoutY="166.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="553.0" layoutY="166.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle layoutX="300.0" layoutY="316.0" radius="11.0" stroke="BLACK" strokeType="INSIDE" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="278.0" layoutY="51.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="27.0" layoutY="201.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="278.0" layoutY="350.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
+      <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="530.0" layoutY="201.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
+      <Text fill="#d4db51" layoutX="1.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DinKæresteErLækkerEmil" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="251.0" layoutY="381.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BIG DICK BULLY" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="504.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="250.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DildoLover123" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Rectangle id="flopCard3" fx:id="flopCard3" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="275.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="flopCard2" fx:id="flopCard2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="330.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="flopCard1" fx:id="flopCard1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="385.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="turnCard" fx:id="turnCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="220.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="riverCard" fx:id="riverCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="165.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="playerCard1" fx:id="playerCard1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="210.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="playerCard2" fx:id="playerCard2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="155.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="playerRedCard2_2" fx:id="playerRedCard2_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="42.0" layoutY="191.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard4_2" fx:id="playerRedCard4_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="547.0" layoutY="191.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard3_2" fx:id="playerRedCard3_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="41.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard2_1" fx:id="playerRedCard2_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="39.0" layoutY="191.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard3_1" fx:id="playerRedCard3_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="290.0" layoutY="41.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard4_1" fx:id="playerRedCard4_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="544.0" layoutY="191.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard1_2" fx:id="playerRedCard1_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="339.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Rectangle id="playerRedCard1_1" fx:id="playerRedCard1_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="290.0" layoutY="339.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
    </children>
 </AnchorPane>

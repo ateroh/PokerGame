@@ -15,6 +15,7 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ListView;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
 /**
@@ -22,6 +23,13 @@ import javafx.scene.text.Text;
  * Viser spillere og håndterer spillet.
  */
 public class TableController implements Initializable {
+
+    @FXML
+    private Rectangle playerRedCard1_1, playerRedCard1_2, playerRedCard2_1, playerRedCard2_2,
+                    playerRedCard3_1, playerRedCard3_2, playerRedCard4_1, playerRedCard4_2;
+    
+    @FXML
+    private Rectangle flopCard1, flopCard2, flopCard3, turnCard, riverCard, playerCard1, playerCard2;
 
     @FXML
     private ListView<String> playerListView;
