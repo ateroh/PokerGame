@@ -1,6 +1,7 @@
 package game.controller;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -96,11 +97,31 @@ public class TableController implements Initializable {
      * Opdaterer spiller-pladserne på bordet.
      */
     private void updatePlayerSlots(List<PlayerInfo> players) {
-        currentPlayers = players;
+        // Find index of current player
+        int meIndex = -1;
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).isMe) {
+                meIndex = i;
+                break;
+            }
+        }
+
+        // Rotate the list so that the current player is at position 1 (player2)
+        List<PlayerInfo> rotatedPlayers = new ArrayList<>();
+        if (meIndex != -1) {
+            int start = (meIndex - 1 + players.size()) % players.size();
+            for (int i = 0; i < players.size(); i++) {
+                rotatedPlayers.add(players.get((start + i) % players.size()));
+            }
+        } else {
+            rotatedPlayers.addAll(players);
+        }
+
+        currentPlayers = rotatedPlayers;
 
         for (int i = 0; i < playerSlots.length; i++) {
-            if (i < players.size()) {
-                PlayerInfo player = players.get(i);
+            if (i < rotatedPlayers.size()) {
+                PlayerInfo player = rotatedPlayers.get(i);
                 String displayName = player.name;
 
                 if (player.isMe) {
@@ -190,4 +211,3 @@ public class TableController implements Initializable {
         }
     }
 }
-
