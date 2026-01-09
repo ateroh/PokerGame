@@ -24,6 +24,13 @@
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
+
+      <!-- Ready knap -->
+      <Button fx:id="readyButton" layoutX="500.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="Ready" textAlignment="CENTER" textFill="#d4db51">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
       <Circle layoutX="301.0" layoutY="51.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
       <Circle layoutX="301.0" layoutY="350.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
       <Circle layoutX="50.0" layoutY="200.0" radius="23.0" stroke="BLACK" strokeType="INSIDE" />
@@ -36,26 +43,46 @@
       <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="27.0" layoutY="201.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="278.0" layoutY="350.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
       <Rectangle arcHeight="5.0" arcWidth="5.0" height="27.0" layoutX="530.0" layoutY="201.0" stroke="BLACK" strokeType="INSIDE" width="46.0" />
-      <Text fill="#d4db51" layoutX="1.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DinKæresteErLækkerEmil" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="player1Name" fill="#d4db51" layoutX="1.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutX="251.0" layoutY="381.0" strokeType="OUTSIDE" strokeWidth="0.0" text="BIG DICK BULLY" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Button fx:id="kick1Button" layoutX="35.0" layoutY="235.0" mnemonicParsing="false" onAction="#onKick1Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <Text fx:id="player2Name" fill="#d4db51" layoutX="251.0" layoutY="381.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutX="504.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Button fx:id="kick2Button" layoutX="285.0" layoutY="383.0" mnemonicParsing="false" onAction="#onKick2Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <Text fx:id="player3Name" fill="#d4db51" layoutX="504.0" layoutY="232.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutX="250.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="DildoLover123" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Button fx:id="kick3Button" layoutX="538.0" layoutY="235.0" mnemonicParsing="false" onAction="#onKick3Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
+      <Text fx:id="player4Name" fill="#d4db51" layoutX="250.0" layoutY="82.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Seat Available..." textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
+      <Button fx:id="kick4Button" layoutX="285.0" layoutY="85.0" mnemonicParsing="false" onAction="#onKick4Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+         <font>
+            <Font size="10.0" />
+         </font>
+      </Button>
       <Rectangle id="flopCard3" fx:id="flopCard3" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="275.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
       <Rectangle id="flopCard2" fx:id="flopCard2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="330.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
       <Rectangle id="flopCard1" fx:id="flopCard1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="385.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />

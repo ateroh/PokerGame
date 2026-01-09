@@ -1,5 +1,9 @@
 game/model/DealerModel.class
+game/players/PlayerClient$ClientEventListener.class
+game/model/TableModel$PlayerInfo.class
+game/model/TableModel.class
 game/controller/TableController.class
 game/controller/JoinController.class
 game/controller/CreateController.class
 game/model/Card.class
+game/model/TableModel$1.class

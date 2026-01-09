@@ -1,210 +1,265 @@
 package game.players;
 
-import java.util.ArrayList;
+import org.jspace.*;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.RandomSpace;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
-import org.jspace.SpaceRepository;
-
 import game.model.DeckModel;
 import game.model.GameModel;
 
 /**
- * Host repræsenterer serveren i poker-spillet.
- * Opretter et tuple space som andre spillere kan forbinde til.
- * Lytter efter nye spillere i en baggrundstråd.
+ * Host - server der extender PlayerClient.
+ * Ligesom MasterPeer extends Peer.
  */
-public class Host {
-    
-    // Port som serveren lytter på (f.eks. 9001)
-    private int port;
+public class Host extends PlayerClient {
 
-    // Hostens brugernavn
-    private String username;
+    public static final int MAX_LOBBY_SIZE = 4;
 
-    // SpaceRepository håndterer netværksforbindelser til tuple spaces
-    // Det er "serveren" der eksponerer spaces over netværk
-    private SpaceRepository repository;
+    private SequentialSpace requestSpace;
+    private SequentialSpace lockSpace;
+    private RandomSpace deckSpace;
 
-    // Det delte tuple space hvor al kommunikation sker
-    // Både host og clients læser/skriver til dette space
-    private Space gameSpace;
-    private GameModel game;
-    // Liste over alle spillere der er joined (inkl. host)
-    private List<String> players = new ArrayList<>();
-
-    // Baggrundstråd der lytter efter nye spillere
-    private Thread listenerThread;
-    
-    // deck space
-    private Space deckSpace;
     private DeckModel deck;
-
-    // game space
-   
-
-    // Flag til at stoppe listener-tråden
+    private GameModel game;
+    private int idTracker = 0;
     private boolean running = false;
 
     public Host(int port, String username) {
-        this.port = port;
-        this.username = username;
+        super(username, String.valueOf(port));
+        this.id = generateNewPlayerId();
+        this.hostId = this.id;
     }
 
-    /**
-     * Starter serveren og begynder at lytte efter spillere.
-     *
-     * URI formatet er: tcp://localhost:port/?conn
-     * - "localhost" betyder serveren kun lytter lokalt (LAN)
-     * - "?conn" angiver connection-protokollen
-     */
     public void start() throws Exception {
-        // Opbyg URI - serveren lytter på denne adresse
-        String uri = "tcp://localhost:" + port + "/?conn";
-
-        // Opret repository - dette er "netværkslaget" i jSpace
-        repository = new SpaceRepository();
-
-        // Åbn en "gate" så clients kan forbinde via TCP
-        repository.addGate(uri);
-
-        // Opret det faktiske tuple space hvor data gemmes
-        // SequentialSpace betyder tuples behandles i rækkefølge
-        gameSpace = new SequentialSpace();
-        deckSpace = new RandomSpace();
-
-        // Registrer space med navnet "game" - clients forbinder til dette navn
-        repository.add("game", gameSpace);
-        repository.add("deck", deckSpace);
-        
-        // init dick
+        initSpaces();
+        playersSpace.put(id, username, uri, false);
+        lockSpace.put("loginLock");
         initModels();
-
-        //maaske flyt til initmodels
-        // Registrer host som den første spiller
-        gameSpace.put("player", username, "host");
-        players.add(username);
-
-        System.out.println("Server started on port " + port);
-        System.out.println("Host player: " + username);
-
-        // Start baggrundstråd der lytter efter nye spillere
         running = true;
-        listenerThread = new Thread(this::listenForPlayers);
-        listenerThread.start();
+        connected = true;
+        System.out.println("Server startet på " + uri + " - Host: " + username);
+        awaitLobbyRequest();
+        awaitLeaveRequests();
     }
 
-    /**
-     * Lytter efter nye spillere i en uendelig løkke.
-     * Kører i en separat tråd så den ikke blokerer hovedprogrammet.
-     *
-     * Bruger get() som er et BLOKERENDE kald - den venter indtil
-     * en tuple der matcher findes i space.
-     */
-    private void listenForPlayers() {
-        System.out.println("Listener startet - venter på spillere...");
+    @Override
+    protected void initSpaces() {
+        try {
+            repository = new SpaceRepository();
+            playersSpace = new SequentialSpace();
+            gameSpace = new SequentialSpace();
+            requestSpace = new SequentialSpace();
+            readySpace = new SequentialSpace();
+            lockSpace = new SequentialSpace();
+            deckSpace = new RandomSpace();
 
-        // Broadcast initial spillerliste
-        broadcastPlayerList();
-
-        while (running) {
-            try {
-                // get() BLOKERER indtil en matching tuple findes
-                // ActualField("newplayer") = matcher præcis strengen "newplayer"
-                // FormalField(String.class) = matcher enhver String (spillerens navn)
-                Object[] player = gameSpace.get(
-                    new ActualField("newplayer"),
-                    new FormalField(String.class)
-                );
-
-                // Tuple blev fundet og FJERNET fra space
-                // player[0] = "newplayer", player[1] = username
-                String playerName = (String) player[1];
-                players.add(playerName);
-
-                System.out.println("\n>>> Ny spiller joined: " + playerName);
-                System.out.println(">>> Antal spillere: " + players.size());
-                System.out.println(">>> Spillere: " + players);
-
-                // Broadcast opdateret spillerliste til alle
-                broadcastPlayerList();
-
-            } catch (InterruptedException e) {
-                // Tråden blev afbrudt (f.eks. ved stop())
-                break;
-            }
+            repository.add("game", gameSpace);
+            repository.add("requests", requestSpace);
+            repository.add("ready", readySpace);
+            repository.add("deck", deckSpace);
+            repository.addGate(uri + "/?keep");
+        } catch (Exception e) {
+            System.err.println("initSpaces fejl: " + e.getMessage());
         }
     }
 
-
     private void initModels() throws InterruptedException {
-        deck =  new DeckModel(deckSpace);
+        deck = new DeckModel(deckSpace);
         deck.initialize();
-        System.out.println("deck initialized");
-
-        // virker ikke (gameModel)
-        //game = new gameModel(gameSpace, deck);
     }
-    
+
+    public void awaitLobbyRequest() {
+        new Thread(() -> {
+            while (running) {
+                try {
+                    lockSpace.get(new ActualField("loginLock"));
+                    String newPlayerId = generateNewPlayerId();
+                    lockSpace.put("awaiting_" + newPlayerId);
+
+                    Object[] request = requestSpace.get(
+                        new ActualField("Helo"),
+                        new FormalField(String.class),
+                        new FormalField(String.class)
+                    );
+                    String playerName = (String) request[1];
+                    String playerUri = (String) request[2];
+
+                    if (isLobbyFull()) {
+                        requestSpace.put("Lobby is full", playerUri);
+                        lockSpace.put("loginLock");
+                        continue;
+                    }
+
+                    LinkedList<Object[]> currentPlayers = new LinkedList<>(playersSpace.queryAll(
+                        new FormalField(String.class), new FormalField(String.class),
+                        new FormalField(String.class), new FormalField(Boolean.class)
+                    ));
+
+                    requestSpace.put("Approved", playerUri);
+                    requestSpace.put("Helo", this.id, newPlayerId, currentPlayers, playerUri);
+                    playersSpace.put(newPlayerId, playerName, playerUri, false);
+
+                    System.out.println(">>> Ny spiller: " + playerName + " (" + getLobbySize() + " spillere)");
+                    broadcastPlayerList();
+                    lockSpace.put("loginLock");
+                } catch (InterruptedException e) {
+                    if (running) e.printStackTrace();
+                    break;
+                }
+            }
+        }).start();
+    }
+
     /**
-     * Broadcaster spillerlisten til tuple space så alle clients kan se den.
-     * Fjerner først den gamle liste og tilføjer den nye.
+     * Lytter efter spillere der forlader.
      */
+    public void awaitLeaveRequests() {
+        new Thread(() -> {
+            while (running) {
+                try {
+                    Object[] leave = gameSpace.get(
+                        new ActualField("leave"),
+                        new FormalField(String.class),
+                        new FormalField(String.class)
+                    );
+                    String playerId = (String) leave[1];
+                    String playerName = (String) leave[2];
+
+                    // Fjern spiller fra playersSpace
+                    playersSpace.getp(
+                        new ActualField(playerId),
+                        new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(Boolean.class)
+                    );
+
+                    System.out.println("<<< Spiller forlod: " + playerName + " (" + getLobbySize() + " spillere)");
+                    broadcastPlayerList();
+                } catch (InterruptedException e) {
+                    if (running) e.printStackTrace();
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    public void awaitReadyFlags() {
+        new Thread(() -> {
+            try {
+                HashMap<String, Boolean> readyMap = new HashMap<>();
+                while (running) {
+                    Object[] info = readySpace.get(
+                        new ActualField("ready"),
+                        new FormalField(String.class),
+                        new FormalField(Boolean.class)
+                    );
+                    readyMap.put((String) info[1], (Boolean) info[2]);
+
+                    if (isAllReady(readyMap) && getLobbySize() >= 2) {
+                        gameSpace.put("gamestart", true);
+                        break;
+                    }
+                }
+            } catch (InterruptedException e) {
+                if (running) e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private boolean isAllReady(HashMap<String, Boolean> readyMap) {
+        if (readyMap.size() < getLobbySize()) return false;
+        for (Boolean ready : readyMap.values()) {
+            if (!ready) return false;
+        }
+        return true;
+    }
+
     private void broadcastPlayerList() {
         try {
-            // Fjern gammel spillerliste (hvis den findes)
             gameSpace.getp(new ActualField("playerlist"), new FormalField(String.class));
-
-            // Konverter spillerliste til komma-separeret string
-            String playerListStr = String.join(",", players);
-
-            // Tilføj ny spillerliste
-            gameSpace.put("playerlist", playerListStr);
-
-            System.out.println("Broadcasted playerlist: " + playerListStr);
+            StringBuilder sb = new StringBuilder();
+            var players = playersSpace.queryAll(
+                new FormalField(String.class), new FormalField(String.class),
+                new FormalField(String.class), new FormalField(Boolean.class)
+            );
+            for (int i = 0; i < players.size(); i++) {
+                if (i > 0) sb.append(",");
+                sb.append((String) players.get(i)[1]);
+            }
+            gameSpace.put("playerlist", sb.toString());
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
     }
 
+    public String generateNewPlayerId() { return String.valueOf(idTracker++); }
+    public boolean isLobbyFull() { return getLobbySize() >= MAX_LOBBY_SIZE; }
+
     /**
-     * Stopper serveren og lukker alle forbindelser.
+     * Smid en spiller ud af lobbyen.
+     */
+    public void kickPlayer(String playerId) {
+        try {
+            Object[] kicked = playersSpace.getp(
+                new ActualField(playerId),
+                new FormalField(String.class),
+                new FormalField(String.class),
+                new FormalField(Boolean.class)
+            );
+            if (kicked != null) {
+                String playerName = (String) kicked[1];
+                // Send kick besked til spilleren
+                gameSpace.put("kicked", playerId, "Du blev smidt ud af hosten");
+                System.out.println("Kicked: " + playerName);
+                broadcastPlayerList();
+            }
+        } catch (InterruptedException e) {
+            System.err.println("Kick fejl: " + e.getMessage());
+        }
+    }
+
+    /**
+     * Stop serveren og send shutdown til alle spillere.
      */
     public void stop() {
         running = false;
-        if (listenerThread != null) {
-            listenerThread.interrupt();
+        connected = false;
+
+        // Broadcast shutdown til alle spillere
+        try {
+            gameSpace.put("shutdown", "Host har lukket serveren");
+        } catch (InterruptedException e) {
+            System.err.println("Shutdown broadcast fejl: " + e.getMessage());
         }
+
+        // Luk gate
         if (repository != null) {
-            repository.closeGate("tcp://localhost:" + port + "/?conn");
+            try {
+                repository.closeGate(uri + "/?keep");
+            } catch (Exception e) {
+                // Ignore
+            }
         }
-    }
-    
-    public DeckModel getDeck() {
-        return deck;
-    }
-    
-    public Space getDeckSpace() {
-        return deckSpace;
-    }
-    
-    public Space getGameSpace() {
-        return gameSpace;
-    }
-    
-    public List<String> getPlayers() {
-        return new ArrayList<>(players);
+        System.out.println("Server lukket");
     }
 
-    public String getUsername() {
-        return username;
+    @Override
+    public void sendReadyFlag(boolean isReady) {
+        try { readySpace.put("ready", id, isReady); } catch (InterruptedException e) { e.printStackTrace(); }
     }
 
-    public GameModel getGame() {
-        return game;
+    public Space getDeckSpace() { return deckSpace; }
+    public DeckModel getDeck() { return deck; }
+    public GameModel getGame() { return game; }
+    public int getPort() { return Integer.parseInt(port); }
+
+    /**
+     * Hent alle spillere med deres ID (til kick-funktion).
+     */
+    public List<Object[]> getPlayersWithIds() {
+        return playersSpace.queryAll(
+            new FormalField(String.class), new FormalField(String.class),
+            new FormalField(String.class), new FormalField(Boolean.class)
+        );
     }
 }
