@@ -107,6 +107,10 @@ public class Host {
      */
     private void listenForPlayers() {
         System.out.println("Listener startet - venter på spillere...");
+
+        // Broadcast initial spillerliste
+        broadcastPlayerList();
+
         while (running) {
             try {
                 // get() BLOKERER indtil en matching tuple findes
@@ -126,6 +130,9 @@ public class Host {
                 System.out.println(">>> Antal spillere: " + players.size());
                 System.out.println(">>> Spillere: " + players);
 
+                // Broadcast opdateret spillerliste til alle
+                broadcastPlayerList();
+
             } catch (InterruptedException e) {
                 // Tråden blev afbrudt (f.eks. ved stop())
                 break;
@@ -143,6 +150,27 @@ public class Host {
         //game = new gameModel(gameSpace, deck);
     }
     
+    /**
+     * Broadcaster spillerlisten til tuple space så alle clients kan se den.
+     * Fjerner først den gamle liste og tilføjer den nye.
+     */
+    private void broadcastPlayerList() {
+        try {
+            // Fjern gammel spillerliste (hvis den findes)
+            gameSpace.getp(new ActualField("playerlist"), new FormalField(String.class));
+
+            // Konverter spillerliste til komma-separeret string
+            String playerListStr = String.join(",", players);
+
+            // Tilføj ny spillerliste
+            gameSpace.put("playerlist", playerListStr);
+
+            System.out.println("Broadcasted playerlist: " + playerListStr);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Stopper serveren og lukker alle forbindelser.
      */
@@ -171,6 +199,11 @@ public class Host {
     public List<String> getPlayers() {
         return new ArrayList<>(players);
     }
+
+    public String getUsername() {
+        return username;
+    }
+
     public GameModel getGame() {
         return game;
     }
