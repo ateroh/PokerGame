@@ -1,9 +1,16 @@
 package game.players;
 
-import org.jspace.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.jspace.ActualField;
+import org.jspace.FormalField;
+import org.jspace.RemoteSpace;
+import org.jspace.SequentialSpace;
+import org.jspace.Space;
+import org.jspace.SpaceRepository;
+import org.jspace.Tuple;
 
 /**
  * PlayerClient - base klasse for netværksspillere.

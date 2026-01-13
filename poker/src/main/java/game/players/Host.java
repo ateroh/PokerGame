@@ -1,9 +1,16 @@
 package game.players;
 
-import org.jspace.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import org.jspace.ActualField;
+import org.jspace.FormalField;
+import org.jspace.RandomSpace;
+import org.jspace.SequentialSpace;
+import org.jspace.Space;
+import org.jspace.SpaceRepository;
+
 import game.model.DeckModel;
 import game.model.GameModel;
 
@@ -66,6 +73,7 @@ public class Host extends PlayerClient {
     private void initModels() throws InterruptedException {
         deck = new DeckModel(deckSpace);
         deck.initialize();
+        game = new GameModel(gameSpace, deck);  
     }
 
     public void awaitLobbyRequest() {
@@ -188,10 +196,9 @@ public class Host extends PlayerClient {
             }
             gameSpace.put("playerlist", sb.toString());
         } catch (InterruptedException e) {
-            e.printStackTrace();
         }
     }
-
+    
     public String generateNewPlayerId() { return String.valueOf(idTracker++); }
     public boolean isLobbyFull() { return getLobbySize() >= MAX_LOBBY_SIZE; }
 
