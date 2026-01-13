@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.shape.Rectangle?>
@@ -26,7 +27,7 @@
       </Button>
 
       <!-- Ready knap -->
-      <Button fx:id="readyButton" layoutX="500.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="Ready" textAlignment="CENTER" textFill="#d4db51">
+      <Button fx:id="readyButton" layoutX="500.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="READY" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
@@ -98,5 +99,26 @@
       <Rectangle id="playerRedCard4_1" fx:id="playerRedCard4_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="544.0" layoutY="191.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_2" fx:id="playerRedCard1_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="339.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_1" fx:id="playerRedCard1_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="290.0" layoutY="339.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
+      <Button layoutX="408.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="START" textAlignment="CENTER" textFill="#d4db51">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="345.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="FOLD" textAlignment="CENTER" textFill="#d4db51">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="420.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="CALL" textAlignment="CENTER" textFill="#d4db51">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
+      <Button layoutX="495.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="RAISE" textAlignment="CENTER" textFill="#d4db51">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
+      <Slider layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" />
    </children>
 </AnchorPane>
