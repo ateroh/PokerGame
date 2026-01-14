@@ -93,7 +93,7 @@ public class GameModel {
             names.add(p.getName());
         }
         dealer.dealCards(names);
-        
+    
         System.out.println("hand started");
     }
 
@@ -209,7 +209,7 @@ public class GameModel {
         System.out.println("betting complete. Pot: " + pot);
         
         for (PlayerModel p : players) {
-            p.resetForNewHand();
+            p.resetForNewRound();
         }
         currentBet = 0;
 

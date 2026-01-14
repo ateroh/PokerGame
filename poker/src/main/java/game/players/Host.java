@@ -74,6 +74,7 @@ public class Host extends PlayerClient {
         deck = new DeckModel(deckSpace);
         deck.initialize();
         game = new GameModel(gameSpace, deck);  
+        game.addPlayer(username);
     }
 
     public void awaitLobbyRequest() {
@@ -106,6 +107,7 @@ public class Host extends PlayerClient {
                     requestSpace.put("Approved", playerUri);
                     requestSpace.put("Helo", this.id, newPlayerId, currentPlayers, playerUri);
                     playersSpace.put(newPlayerId, playerName, playerUri, false);
+                    game.addPlayer(playerName);
 
                     System.out.println(">>> Ny spiller: " + playerName + " (" + getLobbySize() + " spillere)");
                     broadcastPlayerList();

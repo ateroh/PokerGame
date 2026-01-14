@@ -1,12 +1,14 @@
 package game.model;
 
-import game.players.Host;
-import game.players.PlayerClient;
-import javafx.application.Platform;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import org.jspace.Space;
+
+import game.players.Host;
+import game.players.PlayerClient;
+import javafx.application.Platform;
 
 /**
  * Model for poker-bordet.
@@ -150,6 +152,21 @@ public class TableModel {
         return result;
     }
 
+
+    public void startGame() {
+        if (host == null) {
+            System.err.println("Only host can start game!");
+            return;
+        }
+        
+        new Thread(() -> {
+            try {
+                host.getGame().playCompleteHand();
+            } catch (InterruptedException e) {
+            }
+        }).start();
+    }
+
     private String getStatusText(int playerCount) {
         if (host != null) {
             return "Spillere: " + playerCount + "/" + Host.MAX_LOBBY_SIZE;
@@ -221,5 +238,15 @@ public class TableModel {
             updateThread.interrupt();
         }
     }
+
+    public Space getGameSpace() {
+        if (host != null) {
+            return host.getGameSpace();
+        } else if (client != null) {
+            return client.getGameSpace();
+        }
+        return null;
+    }
+
 }
 

@@ -201,7 +201,14 @@ public class PlayerClient {
         return "tcp://" + ip + ":" + port;
     }
 
-    public int getLobbySize() { return playersSpace.size(); }
+    public int getLobbySize() { 
+        return playersSpace.queryAll(
+            new FormalField(String.class),
+            new FormalField(String.class),
+            new FormalField(String.class),
+            new FormalField(Boolean.class)
+        ).size();
+    }
     public Space getGameSpace() { return connected ? remoteGameSpace : gameSpace; }
     public String getUsername() { return username; }
     public String getId() { return id; }

@@ -5,6 +5,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import org.jspace.ActualField;
+import org.jspace.FormalField;
+import org.jspace.Space;
+
 import game.model.TableModel;
 import game.model.TableModel.PlayerInfo;
 import game.players.Host;
@@ -42,6 +46,9 @@ public class TableController implements Initializable {
 
     @FXML
     private VBox playerListBox;
+
+    @FXML
+    private Button startButton;
 
     @FXML
     private Button kick1Button, kick2Button, kick3Button, kick4Button;
@@ -88,9 +95,13 @@ public class TableController implements Initializable {
         if (readyButton != null) {
             readyButton.setText("Ready");
         }
-
+        if (startButton != null) {
+            startButton.setVisible(isHost);
+            startButton.setManaged(isHost);
+        }
         // Start model
         model.startPlayerListUpdater();
+        // DisplayCards();
     }
 
     /**
@@ -188,6 +199,24 @@ public class TableController implements Initializable {
     }
 
     @FXML
+    private void onStartClicked() {
+        if (model.isHost()) {
+            model.startGame(); 
+             DisplayCards(); 
+            
+            if (startButton != null) {
+                startButton.setDisable(true);
+                startButton.setText("Game Running...");
+            }
+            
+            if (statusText != null) {
+                statusText.setText("Game Started");
+            }
+            
+        }
+    }
+
+    @FXML
     private void onKick1Clicked() { kickPlayerAtIndex(0); }
     @FXML
     private void onKick2Clicked() { kickPlayerAtIndex(1); }
@@ -234,4 +263,44 @@ public class TableController implements Initializable {
             model.shutdown();
         }
     }
+
+    public void DisplayCards() {
+        new Thread(() -> {
+            try {
+                Space gameSpace = model.getGameSpace();
+                
+                while (gameSpace == null) {
+                    gameSpace = model.getGameSpace();
+                }
+                
+                String myName = model.getMyName();
+                
+                Object[] cards = gameSpace.get(
+                    new ActualField("dealtCards"),
+                    new ActualField(myName),
+                    new FormalField(String.class),
+                    new FormalField(String.class),
+                    new FormalField(String.class),
+                    new FormalField(String.class)
+                );
+                
+                String file1 = (String) cards[2];
+                String file2 = (String) cards[3];
+                
+                
+                playerCard1.setFill(new javafx.scene.paint.ImagePattern(
+                    new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + file1))
+                ));
+                playerCard1.setVisible(true);
+                
+                playerCard2.setFill(new javafx.scene.paint.ImagePattern(
+                    new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + file2))
+                ));
+                playerCard2.setVisible(true);
+                
+                
+            } catch (InterruptedException e) {
+            }
+        }).start();
+}
 }

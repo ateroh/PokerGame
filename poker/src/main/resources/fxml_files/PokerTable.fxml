@@ -99,7 +99,7 @@
       <Rectangle id="playerRedCard4_1" fx:id="playerRedCard4_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="544.0" layoutY="191.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_2" fx:id="playerRedCard1_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="339.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_1" fx:id="playerRedCard1_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="290.0" layoutY="339.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
-      <Button layoutX="408.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="START" textAlignment="CENTER" textFill="#d4db51">
+      <Button layoutX="408.0" layoutY="14.0" mnemonicParsing="false" fx:id="startButton" onAction="#onStartClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="START" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>

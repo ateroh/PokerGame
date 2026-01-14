@@ -64,6 +64,9 @@ public class PlayerModel {
         
         hand.clear();
     }
+    public void resetForNewRound() {
+        betAmount = 0;
+    }
 
     public int raise(int raiseAmount) {
         return placeBet(raiseAmount);
