@@ -18,7 +18,7 @@ public class DealerModel {
         for (String p : players) {
             Card card1 = deck.drawCard();
             Card card2 = deck.drawCard();
-
+            System.out.println("putting cards in gamespace for " + p);
             gameSpace.put("dealtCards",p,card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank());
             
         }

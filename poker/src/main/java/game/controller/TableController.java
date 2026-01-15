@@ -68,7 +68,11 @@ public class TableController implements Initializable {
 
         // Hent host eller client reference
         Host host = CreateController.getSharedHost();
-        PlayerClient client = JoinController.getSharedClient();
+        PlayerClient client = (host != null) ? host : JoinController.getSharedClient();
+        if (host != null) client = null;
+        System.out.println("CreateController.getSharedHost() = " + CreateController.getSharedHost());
+        System.out.println("JoinController.getSharedClient() = " + JoinController.getSharedClient());
+
         
         // Opret model
         model = new TableModel(host, client);
@@ -244,6 +248,13 @@ public class TableController implements Initializable {
     @FXML
     private void onBackClicked() {
         model.leave();
+        if (CreateController.getSharedHost() != null) {
+            game.controller.CreateController.clearSharedHost(); // host
+        }
+        
+        if (JoinController.getSharedClient() != null) {
+            game.controller.JoinController.clearSharedClient(); // er client
+        }
         goToMenu();
     }
 
