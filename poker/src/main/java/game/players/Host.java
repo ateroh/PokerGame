@@ -245,6 +245,7 @@ public class Host extends PlayerClient {
         if (repository != null) {
             try {
                 repository.closeGate(uri + "/?keep");
+                Thread.sleep(300); //sleep a bit to make sure it closes
             } catch (Exception e) {
                 // Ignore
             }

@@ -35,6 +35,8 @@ public class JoinController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Sæt default værdier
+        sharedClient = null;
+        
         if (hostTextField != null) {
             hostTextField.setText(DEFAULT_HOST);
         }
@@ -60,8 +62,11 @@ public class JoinController implements Initializable {
 
             // Opret og forbind client
             client = new PlayerClient(host, port, name);
-            client.connect();
             sharedClient = client;
+            CreateController.clearSharedHost();
+            client.connect();
+            
+            
 
             System.out.println("Forbundet til " + host + ":" + port + " som " + name);
 
@@ -82,6 +87,8 @@ public class JoinController implements Initializable {
         if (client != null) {
             client.disconnect();
         }
+        sharedClient = null;
+
         SceneManager.getInstance().switchScene("menu");
     }
 
@@ -89,6 +96,14 @@ public class JoinController implements Initializable {
     public static PlayerClient getSharedClient() {
         return sharedClient;
     }
+
+    public static void clearSharedClient() {
+        sharedClient = null;
+    }
+    public static void setSharedClient(PlayerClient c) {
+        sharedClient = c;
+    }
+    
     
 }
 

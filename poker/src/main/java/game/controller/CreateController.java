@@ -5,7 +5,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import game.players.Host;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextField;
@@ -36,6 +35,7 @@ public class CreateController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         // Sæt default værdier
+        sharedHost = null;
         portTextField.setText(String.valueOf(DEFAULT_PORT));
         nameTextField.setText(DEFAULT_NAME);
     }
@@ -50,11 +50,17 @@ public class CreateController implements Initializable {
             if (name.isEmpty()) {
                 name = DEFAULT_NAME;
             }
+            if (sharedHost != null) {
+                sharedHost.stop();
+                sharedHost = null;
+            }
 
             // Opret og start host
             host = new Host(port, name);
-            host.start();
             sharedHost = host;
+            JoinController.setSharedClient(host);
+            //JoinController.clearSharedClient();
+            host.start();
             
 
             System.out.println("Server oprettet på port " + port + " som " + name);
@@ -76,12 +82,23 @@ public class CreateController implements Initializable {
         if (host != null) {
             host.stop();
         }
+        sharedHost = null;
         SceneManager.getInstance().switchScene("menu");
+        
+
     }
 
     // Statisk metode så andre kan tilgå host
     public static Host getSharedHost() {
         return sharedHost;
     }
+    public static void clearSharedHost() {
+        sharedHost = null;
+    }
+    public static void setSharedHost(Host h) { 
+        sharedHost = h; 
+    }
+
+
 }
 
