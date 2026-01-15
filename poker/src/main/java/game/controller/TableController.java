@@ -66,7 +66,7 @@ public class TableController implements Initializable {
         // Hent host eller client reference
         Host host = CreateController.getSharedHost();
         PlayerClient client = JoinController.getSharedClient();
-
+        
         // Opret model
         model = new TableModel(host, client);
 
@@ -101,7 +101,11 @@ public class TableController implements Initializable {
         }
         // Start model
         model.startPlayerListUpdater();
-        // DisplayCards();
+        DisplayCards();
+        System.out.println("TableController init: host=" + (host != null) +
+                   ", client=" + (client != null) +
+                   ", myName=" + model.getMyName());
+
     }
 
     /**
@@ -202,7 +206,7 @@ public class TableController implements Initializable {
     private void onStartClicked() {
         if (model.isHost()) {
             model.startGame(); 
-             DisplayCards(); 
+             //DisplayCards(); 
             
             if (startButton != null) {
                 startButton.setDisable(true);
@@ -264,43 +268,53 @@ public class TableController implements Initializable {
         }
     }
 
-    public void DisplayCards() {
+    private void DisplayCards() {
         new Thread(() -> {
             try {
                 Space gameSpace = model.getGameSpace();
-                
                 while (gameSpace == null) {
                     gameSpace = model.getGameSpace();
+                    Thread.sleep(50);
                 }
-                
+
                 String myName = model.getMyName();
-                
+                System.out.println("waiting for dealtCards for " + myName);
+
                 Object[] cards = gameSpace.get(
                     new ActualField("dealtCards"),
                     new ActualField(myName),
-                    new FormalField(String.class),
-                    new FormalField(String.class),
-                    new FormalField(String.class),
-                    new FormalField(String.class)
+                    new FormalField(String.class), // suit1
+                    new FormalField(String.class), // rank1
+                    new FormalField(String.class), // suit2
+                    new FormalField(String.class)  // rank2
                 );
+
+                String suit1 = (String) cards[2];
+                String rank1 = (String) cards[3];
+                String suit2 = (String) cards[4];
+                String rank2 = (String) cards[5];
+
+                String file1 = rank1 + "_of_" + suit1 + ".png";
+                String file2 = rank2 + "_of_" + suit2 + ".png";
+
+                var thing1 = TableController.class.getResourceAsStream("/cards/" + file1);
+                var thing2 = TableController.class.getResourceAsStream("/cards/" + file2);
+
+                var img1 = new javafx.scene.image.Image(thing1);
+                var img2 = new javafx.scene.image.Image(thing2);
+
                 
-                String file1 = (String) cards[2];
-                String file2 = (String) cards[3];
-                
-                
-                playerCard1.setFill(new javafx.scene.paint.ImagePattern(
-                    new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + file1))
-                ));
+                playerCard1.setFill(new javafx.scene.paint.ImagePattern(img1));
                 playerCard1.setVisible(true);
-                
-                playerCard2.setFill(new javafx.scene.paint.ImagePattern(
-                    new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + file2))
-                ));
+
+                playerCard2.setFill(new javafx.scene.paint.ImagePattern(img2));
                 playerCard2.setVisible(true);
-                
-                
+
+
             } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }).start();
-}
+    }
+
 }

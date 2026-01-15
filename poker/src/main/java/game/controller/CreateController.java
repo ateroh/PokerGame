@@ -55,6 +55,7 @@ public class CreateController implements Initializable {
             host = new Host(port, name);
             host.start();
             sharedHost = host;
+            
 
             System.out.println("Server oprettet på port " + port + " som " + name);
 

@@ -15,11 +15,11 @@ public class DealerModel {
     }
 
     public void dealCards(List<String> players) throws InterruptedException {
-        for (String player : players) {
+        for (String p : players) {
             Card card1 = deck.drawCard();
             Card card2 = deck.drawCard();
 
-            gameSpace.put("dealtCards",player,card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank());
+            gameSpace.put("dealtCards",p,card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank());
             
         }
     }

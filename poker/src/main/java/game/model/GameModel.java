@@ -92,6 +92,8 @@ public class GameModel {
         for (PlayerModel p : players) {
             names.add(p.getName());
         }
+        System.out.println("Dealing to: " + names);
+
         dealer.dealCards(names);
     
         System.out.println("hand started");

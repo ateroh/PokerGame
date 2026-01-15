@@ -89,5 +89,6 @@ public class JoinController implements Initializable {
     public static PlayerClient getSharedClient() {
         return sharedClient;
     }
+    
 }
 
