@@ -112,7 +112,7 @@ public class TableModel {
 
         if (host != null) {
             // Host: hent fra playersSpace med IDs
-            for (Object[] p : host.getPlayersWithIds()) {
+            for (Object[] p : host.getLocalPlayers()) {
                 String id = (String) p[0];
                 String name = (String) p[1];
                 boolean isReady = (Boolean) p[3];
@@ -247,4 +247,3 @@ public class TableModel {
     }
 
 }
-

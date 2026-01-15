@@ -57,6 +57,9 @@ public class TableController implements Initializable {
     private Button[] kickButtons;
     private TableModel model;
     private List<PlayerInfo> currentPlayers;
+    
+    private volatile boolean running = true;
+    private Thread displayThread;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -245,6 +248,7 @@ public class TableController implements Initializable {
     }
 
     private void goToMenu() {
+        shutdown();
         try {
             SceneManager.getInstance().switchScene("menu");
         } catch (Exception e) {
@@ -263,19 +267,25 @@ public class TableController implements Initializable {
      * Kaldes når vinduet lukkes.
      */
     public void shutdown() {
+        running = false;
+        if (displayThread != null) {
+            displayThread.interrupt();
+        }
         if (model != null) {
             model.shutdown();
         }
     }
 
     private void DisplayCards() {
-        new Thread(() -> {
+        displayThread = new Thread(() -> {
             try {
                 Space gameSpace = model.getGameSpace();
-                while (gameSpace == null) {
+                while (running && gameSpace == null) {
                     gameSpace = model.getGameSpace();
                     Thread.sleep(50);
                 }
+                
+                if (!running) return;
 
                 String myName = model.getMyName();
                 System.out.println("waiting for dealtCards for " + myName);
@@ -288,6 +298,8 @@ public class TableController implements Initializable {
                     new FormalField(String.class), // suit2
                     new FormalField(String.class)  // rank2
                 );
+                
+                if (!running) return;
 
                 String suit1 = (String) cards[2];
                 String rank1 = (String) cards[3];
@@ -312,9 +324,10 @@ public class TableController implements Initializable {
 
 
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                // Expected on shutdown
             }
-        }).start();
+        });
+        displayThread.start();
     }
 
 }

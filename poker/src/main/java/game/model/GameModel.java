@@ -86,7 +86,7 @@ public class GameModel {
         currentBet = 0;
         phase = "PREFLOP";
         
-        postBlinds();
+        assignPositionsAndBlinds();
         
         List<String> names = new ArrayList<>();
         for (PlayerModel p : players) {

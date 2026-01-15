@@ -163,13 +163,20 @@ public class PlayerClient {
         }
         // Fallback: lokal playersSpace
         if (names.isEmpty()) {
-            for (Object[] p : playersSpace.queryAll(
-                new FormalField(String.class), new FormalField(String.class),
-                new FormalField(String.class), new FormalField(Boolean.class))) {
+            for (Object[] p : getLocalPlayers()) {
                 names.add((String) p[1]);
             }
         }
         return names;
+    }
+
+    public List<Object[]> getLocalPlayers() {
+        return playersSpace.queryAll(
+            new FormalField(String.class),
+            new FormalField(String.class),
+            new FormalField(String.class),
+            new FormalField(Boolean.class)
+        );
     }
 
     public void disconnect() {
@@ -192,7 +199,13 @@ public class PlayerClient {
             if (remoteReadySpace != null) remoteReadySpace.close();
             if (remoteGameSpace != null) remoteGameSpace.close();
         } catch (Exception e) {}
-        if (repository != null) repository.closeGate(uri + "/?keep");
+        
+        if (repository != null) {
+            try {
+                repository.closeGate(uri + "/?keep");
+                repository.shutDown();
+            } catch (Exception e) {}
+        }
 
         System.out.println("Disconnected");
     }
@@ -202,12 +215,7 @@ public class PlayerClient {
     }
 
     public int getLobbySize() { 
-        return playersSpace.queryAll(
-            new FormalField(String.class),
-            new FormalField(String.class),
-            new FormalField(String.class),
-            new FormalField(Boolean.class)
-        ).size();
+        return getLocalPlayers().size();
     }
     public Space getGameSpace() { return connected ? remoteGameSpace : gameSpace; }
     public String getUsername() { return username; }
@@ -271,4 +279,3 @@ public class PlayerClient {
         }).start();
     }
 }
-

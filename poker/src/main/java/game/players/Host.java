@@ -51,20 +51,16 @@ public class Host extends PlayerClient {
 
     @Override
     protected void initSpaces() {
+        super.initSpaces(); // Initializes repository, playersSpace, gameSpace and adds gate
         try {
-            repository = new SpaceRepository();
-            playersSpace = new SequentialSpace();
-            gameSpace = new SequentialSpace();
             requestSpace = new SequentialSpace();
             readySpace = new SequentialSpace();
             lockSpace = new SequentialSpace();
             deckSpace = new RandomSpace();
 
-            repository.add("game", gameSpace);
             repository.add("requests", requestSpace);
             repository.add("ready", readySpace);
             repository.add("deck", deckSpace);
-            repository.addGate(uri + "/?keep");
         } catch (Exception e) {
             System.err.println("initSpaces fejl: " + e.getMessage());
         }
@@ -153,37 +149,6 @@ public class Host extends PlayerClient {
         }).start();
     }
 
-    public void awaitReadyFlags() {
-        new Thread(() -> {
-            try {
-                HashMap<String, Boolean> readyMap = new HashMap<>();
-                while (running) {
-                    Object[] info = readySpace.get(
-                        new ActualField("ready"),
-                        new FormalField(String.class),
-                        new FormalField(Boolean.class)
-                    );
-                    readyMap.put((String) info[1], (Boolean) info[2]);
-
-                    if (isAllReady(readyMap) && getLobbySize() >= 2) {
-                        gameSpace.put("gamestart", true);
-                        break;
-                    }
-                }
-            } catch (InterruptedException e) {
-                if (running) e.printStackTrace();
-            }
-        }).start();
-    }
-
-    private boolean isAllReady(HashMap<String, Boolean> readyMap) {
-        if (readyMap.size() < getLobbySize()) return false;
-        for (Boolean ready : readyMap.values()) {
-            if (!ready) return false;
-        }
-        return true;
-    }
-
     private void broadcastPlayerList() {
         try {
             gameSpace.getp(new ActualField("playerlist"), new FormalField(String.class));
@@ -241,10 +206,11 @@ public class Host extends PlayerClient {
             System.err.println("Shutdown broadcast fejl: " + e.getMessage());
         }
 
-        // Luk gate
+        // Luk gate og repository
         if (repository != null) {
             try {
                 repository.closeGate(uri + "/?keep");
+                repository.shutDown();
             } catch (Exception e) {
                 // Ignore
             }
@@ -264,14 +230,4 @@ public class Host extends PlayerClient {
 
     @Override
     public Space getGameSpace() { return gameSpace; }
-
-    /**
-     * Hent alle spillere med deres ID (til kick-funktion).
-     */
-    public List<Object[]> getPlayersWithIds() {
-        return playersSpace.queryAll(
-            new FormalField(String.class), new FormalField(String.class),
-            new FormalField(String.class), new FormalField(Boolean.class)
-        );
-    }
 }
