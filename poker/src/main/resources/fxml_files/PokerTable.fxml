@@ -84,13 +84,13 @@
             <Font size="10.0" />
          </font>
       </Button>
-      <Rectangle id="flopCard3" fx:id="flopCard3" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="275.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="flopCard2" fx:id="flopCard2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="330.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="flopCard1" fx:id="flopCard1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="385.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="turnCard" fx:id="turnCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="220.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="riverCard" fx:id="riverCard" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="165.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="playerCard1" fx:id="playerCard1" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="210.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
-      <Rectangle id="playerCard2" fx:id="playerCard2" arcHeight="5.0" arcWidth="5.0" fill="WHITE" height="63.0" layoutX="155.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" width="45.0" />
+      <Rectangle id="flopCard3" fx:id="flopCard3" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="275.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="flopCard2" fx:id="flopCard2" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="330.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="flopCard1" fx:id="flopCard1" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="385.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="turnCard" fx:id="turnCard" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="220.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="riverCard" fx:id="riverCard" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="165.0" layoutY="170.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="playerCard1" fx:id="playerCard1" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="210.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
+      <Rectangle id="playerCard2" fx:id="playerCard2" arcHeight="5.0" arcWidth="5.0" fill="TRANSPARENT" height="63.0" layoutX="155.0" layoutY="318.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="0.0" width="45.0" />
       <Rectangle id="playerRedCard2_2" fx:id="playerRedCard2_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="42.0" layoutY="191.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard4_2" fx:id="playerRedCard4_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="547.0" layoutY="191.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard3_2" fx:id="playerRedCard3_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="41.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
@@ -99,7 +99,7 @@
       <Rectangle id="playerRedCard4_1" fx:id="playerRedCard4_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="544.0" layoutY="191.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_2" fx:id="playerRedCard1_2" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="293.0" layoutY="339.0" rotate="20.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
       <Rectangle id="playerRedCard1_1" fx:id="playerRedCard1_1" arcHeight="5.0" arcWidth="5.0" fill="RED" height="21.0" layoutX="290.0" layoutY="339.0" stroke="BLACK" strokeType="INSIDE" width="15.0" />
-      <Button layoutX="408.0" layoutY="14.0" mnemonicParsing="false" fx:id="startButton" onAction="#onStartClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="START" textAlignment="CENTER" textFill="#d4db51">
+      <Button fx:id="startButton" layoutX="408.0" layoutY="14.0" mnemonicParsing="false" onAction="#onStartClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="START" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
