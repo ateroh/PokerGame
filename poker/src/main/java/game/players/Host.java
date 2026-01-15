@@ -262,6 +262,9 @@ public class Host extends PlayerClient {
     public GameModel getGame() { return game; }
     public int getPort() { return Integer.parseInt(port); }
 
+    @Override
+    public Space getGameSpace() { return gameSpace; }
+
     /**
      * Hent alle spillere med deres ID (til kick-funktion).
      */

@@ -54,29 +54,10 @@ public class TableModel {
     }
 
     /**
-     * Sætter callbacks til view.
-     */
-    public void setOnPlayersUpdated(Consumer<List<PlayerInfo>> callback) {
-        this.onPlayersUpdated = callback;
-    }
-
-    public void setOnStatusUpdated(Consumer<String> callback) {
-        this.onStatusUpdated = callback;
-    }
-
-    public void setOnKicked(Runnable callback) {
-        this.onKicked = callback;
-    }
-
-    public void setOnServerShutdown(Runnable callback) {
-        this.onServerShutdown = callback;
-    }
-
-    /**
-     * Opsætter event listener for client (kicked/shutdown).
+     * Sætter event listener op for client.
      */
     private void setupClientEventListener() {
-        if (client != null) {
+        if (client != null && host == null) {
             client.setEventListener(new PlayerClient.ClientEventListener() {
                 @Override
                 public void onKicked(String reason) {
@@ -246,6 +227,23 @@ public class TableModel {
             return client.getGameSpace();
         }
         return null;
+    }
+
+    // Setters for callbacks
+    public void setOnPlayersUpdated(Consumer<List<PlayerInfo>> callback) {
+        this.onPlayersUpdated = callback;
+    }
+
+    public void setOnStatusUpdated(Consumer<String> callback) {
+        this.onStatusUpdated = callback;
+    }
+
+    public void setOnKicked(Runnable callback) {
+        this.onKicked = callback;
+    }
+
+    public void setOnServerShutdown(Runnable callback) {
+        this.onServerShutdown = callback;
     }
 
 }
