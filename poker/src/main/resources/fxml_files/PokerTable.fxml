@@ -131,22 +131,22 @@
          </font>
       </Button>
       <Slider layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" />
-      <Text fill="#d4db51" layoutX="252.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CHIPS: 4" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText4" fill="#d4db51" layoutX="252.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CHIPS: 1" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText1" fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CHIPS: 2" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText2" fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Text fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="CHIPS: 3" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText3" fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>

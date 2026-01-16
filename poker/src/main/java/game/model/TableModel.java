@@ -40,13 +40,15 @@ public class TableModel {
      */
     public static class PlayerInfo {
         public final String id;
+        public final int chips;
         public final String name;
         public final boolean isMe;
         public final boolean isHost;
         public final boolean isReady;
 
-        public PlayerInfo(String id, String name, boolean isMe, boolean isHost, boolean isReady) {
+        public PlayerInfo(String id, int chips, String name, boolean isMe, boolean isHost, boolean isReady) {
             this.id = id;
+            this.chips = chips;
             this.name = name;
             this.isMe = isMe;
             this.isHost = isHost;
@@ -116,19 +118,21 @@ public class TableModel {
             for (Object[] p : host.getLocalPlayers()) {
                 String id = (String) p[0];
                 String name = (String) p[1];
+                int chips = (int) p[2];
                 boolean isReady = (Boolean) p[3];
                 boolean isMe = name.equals(myName);
                 boolean isHostPlayer = id.equals("0");
-                result.add(new PlayerInfo(id, name, isMe, isHostPlayer, isReady));
+                result.add(new PlayerInfo(id, chips, name, isMe, isHostPlayer, isReady));
             }
         } else if (client != null) {
             // Client: hent navne fra server
             List<String> names = client.getPlayerNames();
             for (int i = 0; i < names.size(); i++) {
                 String name = names.get(i);
+                int chips = 500;
                 boolean isMe = name.equals(myName);
                 boolean isHostPlayer = (i == 0);
-                result.add(new PlayerInfo(String.valueOf(i), name, isMe, isHostPlayer, false));
+                result.add(new PlayerInfo(String.valueOf(i), chips, name, isMe, isHostPlayer, false));
             }
         }
         return result;

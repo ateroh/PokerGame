@@ -37,6 +37,9 @@ public class TableController implements Initializable {
 
     @FXML
     private Text player1Name, player2Name, player3Name, player4Name;
+
+    @FXML
+    private Text playerChipText1, playerChipText2, playerChipText3, playerChipText4;
     
     @FXML
     private javafx.scene.control.ListView<String> chatListView;
@@ -60,6 +63,7 @@ public class TableController implements Initializable {
     private Button kick1Button, kick2Button, kick3Button, kick4Button;
 
     private Text[] playerSlots;
+    private Text[] playerChips;
     private Button[] kickButtons;
     private TableModel model;
     private List<PlayerInfo> currentPlayers;
@@ -70,6 +74,7 @@ public class TableController implements Initializable {
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerSlots = new Text[]{player1Name, player2Name, player3Name, player4Name};
+        playerChips = new Text[]{playerChipText1, playerChipText2, playerChipText3, playerChipText4};
         kickButtons = new Button[]{kick1Button, kick2Button, kick3Button, kick4Button};
 
         // Hent host eller client reference
@@ -197,9 +202,11 @@ public class TableController implements Initializable {
                 }
                 if (player.isReady) {
                     displayName += " ✓";
-                }
-
+                }               
                 playerSlots[i].setText(displayName);
+
+                String displayChips = "CHIPS: " + player.chips;
+                playerChips[i].setText(displayChips);
 
                 // Vis/skjul kick-knap (ikke for host selv eller sig selv)
                 if (kickButtons[i] != null && model.isHost()) {

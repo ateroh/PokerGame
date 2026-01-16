@@ -131,5 +131,54 @@
          </font>
       </Button>
       <Slider layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" />
+      <Text fx:id="playerChipText4" fill="#d4db51" layoutX="252.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText1" fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText2" fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText3" fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Circle fill="RED" layoutX="301.0" layoutY="121.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fill="RED" layoutX="300.0" layoutY="275.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fill="RED" layoutX="500.0" layoutY="202.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+      <Circle fill="RED" layoutX="115.0" layoutY="202.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" />
+      <Text fill="#d4db51" layoutX="252.0" layoutY="141.0" strokeType="OUTSIDE" strokeWidth="0.0" text="40" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="66.0" layoutY="219.0" strokeType="OUTSIDE" strokeWidth="0.0" text="10" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="252.0" layoutY="295.0" strokeType="OUTSIDE" strokeWidth="0.0" text="20" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="451.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" text="30" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fill="#d4db51" layoutX="252.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="POT: 0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
    </children>
 </AnchorPane>
