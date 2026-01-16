@@ -44,6 +44,9 @@ public class Host extends PlayerClient {
         initModels();
         running = true;
         connected = true;
+        
+        chatManager.startMessageReceiver();
+        
         System.out.println("Server startet på " + uri + " - Host: " + username);
         awaitLobbyRequest();
         awaitLeaveRequests();

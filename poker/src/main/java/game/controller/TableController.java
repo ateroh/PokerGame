@@ -33,10 +33,16 @@ public class TableController implements Initializable {
                     playerRedCard3_1, playerRedCard3_2, playerRedCard4_1, playerRedCard4_2;
     
     @FXML
-    private Rectangle flopCard1, flopCard2, flopCard3, turnCard, riverCard, playerCard1, playerCard2;
+    private Rectangle playerCard1, playerCard2;
 
     @FXML
     private Text player1Name, player2Name, player3Name, player4Name;
+    
+    @FXML
+    private javafx.scene.control.ListView<String> chatListView;
+    
+    @FXML
+    private javafx.scene.control.TextField chatInput;
 
     @FXML
     private Text statusText;
@@ -106,18 +112,31 @@ public class TableController implements Initializable {
             startButton.setVisible(isHost);
             startButton.setManaged(isHost);
         }
-        // Start model
+        
         model.startPlayerListUpdater();
         DisplayCards();
-        System.out.println("TableController init: host=" + (host != null) +
-                   ", client=" + (client != null) +
-                   ", myName=" + model.getMyName());
-
+        System.out.println("TableController init: myName=" + model.getMyName());
+        
+        // Setup chat
+        model.getChatManager().setOnMessageReceived(msg -> {
+            javafx.application.Platform.runLater(() -> {
+                if (chatListView != null) {
+                    chatListView.getItems().add(msg);
+                    chatListView.scrollTo(chatListView.getItems().size() - 1);
+                }
+            });
+        });
     }
 
-    /**
-     * Opdaterer spiller-pladserne på bordet.
-     */
+    @FXML
+    private void onSendChat() {
+        String msg = chatInput.getText();
+        if (msg != null && !msg.trim().isEmpty()) {
+            model.getChatManager().sendGlobalMessage(msg.trim());
+            chatInput.clear();
+        }
+    }
+
     private void updatePlayerSlots(List<PlayerInfo> players) {
         // Find index of current player
         int meIndex = -1;

@@ -12,6 +12,8 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.Tuple;
 
+import game.chat.ChatManager;
+
 /**
  * PlayerClient - base klasse for netværksspillere.
  * Host extender denne klasse.
@@ -29,6 +31,8 @@ public class PlayerClient {
     protected SequentialSpace playersSpace;  // (id, name, uri, isReady)
     protected SequentialSpace gameSpace;
     protected Space readySpace;
+    
+    protected ChatManager chatManager;
 
     protected boolean connected = false;
 
@@ -43,6 +47,7 @@ public class PlayerClient {
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);
         this.serverUri = formatURI(serverIp, String.valueOf(serverPort));
+        this.chatManager = new ChatManager(this);
     }
 
     // Constructor til Host
@@ -50,6 +55,7 @@ public class PlayerClient {
         this.username = username;
         this.port = port;
         this.uri = formatURI(ip, port);
+        this.chatManager = new ChatManager(this);
     }
 
     protected void initSpaces() {
@@ -58,6 +64,7 @@ public class PlayerClient {
             gameSpace = new SequentialSpace();
             repository = new SpaceRepository();
             repository.add("game", gameSpace);
+            repository.add("chat", chatManager.getChat());
             repository.addGate(uri + "/?keep");
         } catch (Exception e) {
             System.err.println("initSpaces fejl: " + e.getMessage());
@@ -121,6 +128,9 @@ public class PlayerClient {
 
             connected = true;
             System.out.println("Forbundet! ID: " + id);
+            
+            chatManager.startMessageReceiver();
+
             return true;
 
         } catch (Exception e) {
@@ -129,6 +139,8 @@ public class PlayerClient {
             return false;
         }
     }
+    
+    public ChatManager getChatManager() { return chatManager; }
 
     public void sendReadyFlag(boolean isReady) {
         try {

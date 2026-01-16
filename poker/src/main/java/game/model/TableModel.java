@@ -6,6 +6,7 @@ import java.util.function.Consumer;
 
 import org.jspace.Space;
 
+import game.chat.ChatManager;
 import game.players.Host;
 import game.players.PlayerClient;
 import javafx.application.Platform;
@@ -227,6 +228,13 @@ public class TableModel {
             return client.getGameSpace();
         }
         return null;
+    }
+    
+    public ChatManager getChatManager() {
+        if (host != null) {
+            return host.getChatManager();
+        }
+        return client.getChatManager();
     }
 
     // Setters for callbacks

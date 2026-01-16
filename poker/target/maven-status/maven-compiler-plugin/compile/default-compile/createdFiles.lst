@@ -18,6 +18,7 @@ game/view/CardView.class
 game/model/TableModel$PlayerInfo.class
 game/test/ConnectionTest.class
 game/model/TableModel.class
+game/chat/ChatManager.class
 game/Main.class
 game/players/PlayerClient.class
 game/controller/ActionController.class
