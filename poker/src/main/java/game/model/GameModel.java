@@ -17,11 +17,11 @@ public class GameModel {
     private List<PlayerModel> players;
     private DealerModel dealer;
     private String phase;
-    private final int StartingChips = 100;
+    private final int StartingChips = 500;
     private final int maxPlayers = 4;
     private final int minPlayers = 2;
-    public static final int SMALL_BLIND = 10;
-    public static final int BIG_BLIND = 20;
+    public static final int SMALL_BLIND = 5;
+    public static final int BIG_BLIND = 10;
     private int determineSBBB = 0;
 
 

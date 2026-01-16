@@ -10,9 +10,6 @@ public class PlayerModel {
     private String role;
     private HandModel hand;
 
-    public int startingChips = 100;
-
-
     public PlayerModel(String name, int startingChips) {
         this.name = name;
         this.chips = startingChips;
@@ -120,7 +117,7 @@ public class PlayerModel {
         this.hand = hand;
     }
     
-    public String getROle() {
+    public String getRole() {
         return role;
     }
     

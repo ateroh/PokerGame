@@ -141,15 +141,18 @@
          </font>
       </Text>
       <Text fx:id="playerChipText1" fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText1" fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
       <Text fx:id="playerChipText2" fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+      <Text fx:id="playerChipText2" fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
+      <Text fx:id="playerChipText3" fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
       <Text fx:id="playerChipText3" fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
          <font>
             <Font name="Bernard MT Condensed" size="12.0" />
