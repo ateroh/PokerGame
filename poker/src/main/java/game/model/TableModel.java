@@ -143,6 +143,9 @@ public class TableModel {
         
         new Thread(() -> {
             try {
+                for (var player : host.getGame().getPlayers()) {
+                    host.getGameSpace().put("initialChips", player.getName(), player.getChips());
+                }
                 host.getGame().playCompleteHand();
             } catch (InterruptedException e) {
             }

@@ -18,7 +18,9 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -56,21 +58,52 @@ public class TableController implements Initializable {
     @FXML
     private Button startButton;
 
+    @FXML private Text potText;
+
     @FXML
     private Button kick1Button, kick2Button, kick3Button, kick4Button;
 
+    @FXML private Button foldButton, checkButton, callButton, raiseButton;
+    @FXML private Slider raiseSlider;
+
+    @FXML 
+    private Text playerChipText1, playerChipText2, playerChipText3, playerChipText4;
+    
+    @FXML 
+    private Text playerBetText1, playerBetText2, playerBetText3, playerBetText4;
+
+    @FXML
+    private Circle player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle;
+
+    @FXML 
+    private Text raiseAmountText;
+
+    private Circle[] turnCircles;
     private Text[] playerSlots;
     private Button[] kickButtons;
+    private Text[] chipSlots;
+    private Text[] betSlots;
     private TableModel model;
     private List<PlayerInfo> currentPlayers;
     
     private volatile boolean running = true;
     private Thread displayThread;
+    private Thread gameStateMonitorThread;
+
+    
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerSlots = new Text[]{player1Name, player2Name, player3Name, player4Name};
         kickButtons = new Button[]{kick1Button, kick2Button, kick3Button, kick4Button};
+        turnCircles = new Circle[]{player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle};
+        chipSlots = new Text[]{playerChipText1, playerChipText2, playerChipText3, playerChipText4};
+        betSlots = new Text[]{playerBetText1, playerBetText2, playerBetText3, playerBetText4};
+        for (Text chipSlot : chipSlots) {
+            if (chipSlot != null) {
+                chipSlot.setText("100");
+            }
+        }
 
         // Hent host eller client reference
         Host host = CreateController.getSharedHost();
@@ -112,9 +145,12 @@ public class TableController implements Initializable {
             startButton.setVisible(isHost);
             startButton.setManaged(isHost);
         }
-        
+        hideActionButtons();
         model.startPlayerListUpdater();
         DisplayCards();
+        monitorForMyTurn();
+        monitorGameState();
+
         System.out.println("TableController init: myName=" + model.getMyName());
         
         // Setup chat
@@ -236,7 +272,7 @@ public class TableController implements Initializable {
             
             if (startButton != null) {
                 startButton.setDisable(true);
-                startButton.setText("Game Running...");
+                startButton.setText("Game Running");
             }
             
             if (statusText != null) {
@@ -360,4 +396,222 @@ public class TableController implements Initializable {
         displayThread.start();
     }
 
+    private void monitorForMyTurn() {
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Space gameSpace = model.getGameSpace();
+                    if (gameSpace == null) {
+                        Thread.sleep(100);
+                        continue;
+                    }
+                    
+                    String myName = model.getMyName();
+                    
+                    // tjek om min tur
+                    Object[] turnInfo = gameSpace.get(
+                        new ActualField("yourTurn"),
+                        new ActualField(myName),
+                        new FormalField(Integer.class),
+                        new FormalField(Integer.class)
+                    );
+                    
+                    if (turnInfo != null) {
+                        int currentBet = (Integer) turnInfo[2];
+                        int myChips = (Integer) turnInfo[3];
+                        
+                        javafx.application.Platform.runLater(() -> {
+                            statusText.setText("DIN TUR!");
+                            showActionButtons(currentBet, myChips);
+                            showTurnIndicator(myName);
+                        });
+                    }
+                    
+                    Thread.sleep(200);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    @SuppressWarnings("unused")
+    private void sendAction(String action, int amount) {
+        new Thread(() -> {
+            try {
+                Space gameSpace = model.getGameSpace();
+                gameSpace.put("action", model.getMyName(), action, amount);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+
+    private void updatePotDisplay(int pot) {
+        if (potText != null) {
+            potText.setText("POT: " + pot);
+        }
+    }
+
+    private void updatePlayerChipsDisplay(String playerName, int chips) {
+        if (currentPlayers == null) return;
+        
+        for (int i = 0; i < currentPlayers.size(); i++) {
+            PlayerInfo p = currentPlayers.get(i);
+            if (p != null && p.name.equals(playerName)) {
+                if (i < chipSlots.length && chipSlots[i] != null) {
+                    chipSlots[i].setText(String.valueOf(chips));
+                }
+                break;
+            }
+        }
+    }
+
+    @FXML
+    private void onFoldClicked() {
+        new Thread(() -> {
+            try {
+                model.getGameSpace().put("action", model.getMyName(), "fold", 0);
+            } catch (InterruptedException e) {}
+        }).start();
+    }
+
+    @FXML
+    private void onCheckClicked() {
+        new Thread(() -> {
+            try {
+                model.getGameSpace().put("action", model.getMyName(), "check", 0);
+            } catch (InterruptedException e) {}
+        }).start();
+    }
+
+    @FXML
+    private void onCallClicked() {
+        new Thread(() -> {
+            try {
+                model.getGameSpace().put("action", model.getMyName(), "call", 0);
+            } catch (InterruptedException e) {}
+        }).start();
+    }
+
+    @FXML
+    private void onRaiseClicked() {
+        new Thread(() -> {
+            try {
+                int amount = (int) raiseSlider.getValue();
+                model.getGameSpace().put("action", model.getMyName(), "raise", amount);
+            } catch (InterruptedException e) {}
+        }).start();
+    }
+
+    private void showTurnIndicator(String playerName) {
+        // gem alle cirkler
+        for (Circle circle : turnCircles) {
+            if (circle != null) {
+                circle.setVisible(false);
+            }
+        }
+        
+        // hvis player null: gem alle
+        if (playerName == null || currentPlayers == null) {
+            return;
+        }
+        
+        for (int i = 0; i < currentPlayers.size(); i++) {
+            PlayerInfo p = currentPlayers.get(i);
+            if (p != null && p.name.equals(playerName)) {
+                if (i < turnCircles.length && turnCircles[i] != null) {
+                    turnCircles[i].setVisible(true);
+                }
+                break;
+            }
+        }
+    }
+
+    //med hjaelp af claude
+    private void monitorGameState() {
+        gameStateMonitorThread = new Thread(() -> {
+            while (running) {
+                try {
+                    Space gameSpace = model.getGameSpace();
+                    if (gameSpace == null) {
+                        Thread.sleep(100);
+                        continue;
+                    }
+                    
+                    Object[] action = gameSpace.getp(
+                        new ActualField("playerAction"),
+                        new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(Integer.class),
+                        new FormalField(Integer.class),
+                        new FormalField(Integer.class)
+                    );
+                    
+                    if (action != null) {
+                        String playerName = (String) action[1];
+                        String actionType = (String) action[2];
+                        int pot = (Integer) action[5];
+                        int chipsLeft = (Integer) action[4];
+                        
+                        javafx.application.Platform.runLater(() -> {
+                            updatePotDisplay(pot);
+                            updatePlayerChipsDisplay(playerName, chipsLeft);
+                            
+                            if (playerName.equals(model.getMyName())) {
+                                hideActionButtons();
+                            }
+                            showTurnIndicator(null);
+                        });
+                    }
+                    
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        });
+        gameStateMonitorThread.setDaemon(true);
+        gameStateMonitorThread.start();
+    }
+
+    private void showActionButtons(int currentBet, int myChips) {
+        if (foldButton != null) foldButton.setVisible(true);
+        if (callButton != null) {
+            callButton.setVisible(true);
+            callButton.setText("CALL " + currentBet);
+        }
+        if (raiseButton != null) raiseButton.setVisible(true);
+        if (raiseSlider != null) {
+            raiseSlider.setVisible(true);
+            raiseSlider.setMax(myChips);
+            raiseSlider.setMin(currentBet > 0 ? currentBet : 10);
+            raiseSlider.setValue(currentBet > 0 ? currentBet * 2 : 20);
+            raiseSlider.setShowTickLabels(false);
+            raiseSlider.setShowTickMarks(false);
+
+            raiseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                if (raiseAmountText != null) {
+                    raiseAmountText.setText(String.valueOf(newVal.intValue()));
+                }
+            });
+            if (raiseAmountText != null) {
+                raiseAmountText.setVisible(true);
+                raiseAmountText.setText(String.valueOf((int)(currentBet > 0 ? currentBet : 10)));
+            }
+            
+        }
+        // Show check button only if currentBet is 0
+        if (checkButton != null) {
+            checkButton.setVisible(currentBet == 0);
+        }
+    }
+    private void hideActionButtons() {
+        if (foldButton != null) foldButton.setVisible(false);
+        if (checkButton != null) checkButton.setVisible(false);
+        if (callButton != null) callButton.setVisible(false);
+        if (raiseButton != null) raiseButton.setVisible(false);
+        if (raiseSlider != null) raiseSlider.setVisible(false);
+    }
 }

@@ -1,15 +1,12 @@
 package game.players;
 
-import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RandomSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
-import org.jspace.SpaceRepository;
 
 import game.model.DeckModel;
 import game.model.GameModel;
@@ -142,7 +139,7 @@ public class Host extends PlayerClient {
                         new FormalField(Boolean.class)
                     );
 
-                    System.out.println("<<< Spiller forlod: " + playerName + " (" + getLobbySize() + " spillere)");
+                    System.out.println("Spiller forlod: " + playerName + " (" + getLobbySize() + " spillere)");
                     broadcastPlayerList();
                 } catch (InterruptedException e) {
                     if (running) e.printStackTrace();

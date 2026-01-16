@@ -12,7 +12,6 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="800.0" style="-fx-background-color: #2e4d3e;" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="game.controller.TableController">
    <children>
-      <!-- Chat UI Elements -->
       <ListView fx:id="chatListView" layoutX="605.0" layoutY="14.0" prefHeight="334.0" prefWidth="181.0" style="-fx-background-color: #35654d; -fx-control-inner-background: #35654d; -fx-text-fill: white;" />
       <TextField fx:id="chatInput" layoutX="605.0" layoutY="356.0" prefHeight="25.0" prefWidth="135.0" promptText="Type message..." style="-fx-background-color: #d4db51;" />
       <Button layoutX="745.0" layoutY="356.0" mnemonicParsing="false" onAction="#onSendChat" prefHeight="25.0" prefWidth="41.0" style="-fx-background-color: #35654d;" text="Send" textFill="#d4db51">
@@ -23,21 +22,18 @@
 
       <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#35654d" height="299.0" layoutX="48.0" layoutY="51.0" stroke="BLACK" strokeType="INSIDE" strokeWidth="2.0" width="505.0" />
 
-      <!-- Status tekst -->
       <Text fx:id="statusText" fill="#d4db51" layoutX="235.0" layoutY="205.0" text="Venter..." textAlignment="CENTER" wrappingWidth="127.2874755859375">
          <font>
             <Font name="Berlin Sans FB" size="14.0" />
          </font>
       </Text>
 
-      <!-- Back knap -->
       <Button layoutX="14.0" layoutY="14.0" mnemonicParsing="false" onAction="#onBackClicked" prefHeight="25.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="BACK" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
 
-      <!-- Ready knap -->
       <Button fx:id="readyButton" layoutX="500.0" layoutY="14.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="25.0" prefWidth="80.0" style="-fx-background-color: #2e4d3e;" text="READY" textAlignment="CENTER" textFill="#d4db51">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
@@ -115,21 +111,84 @@
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="345.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="FOLD" textAlignment="CENTER" textFill="#d4db51">
+      
+      <Button fx:id="foldButton" layoutX="345.0" layoutY="355.0" mnemonicParsing="false" onAction="#onFoldClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="FOLD" textAlignment="CENTER" textFill="#d4db51" visible="false">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="420.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="CALL" textAlignment="CENTER" textFill="#d4db51">
+      <Button fx:id="callButton" layoutX="420.0" layoutY="355.0" mnemonicParsing="false" onAction="#onCallClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="CALL" textAlignment="CENTER" textFill="#d4db51" visible="false">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
-      <Button layoutX="495.0" layoutY="355.0" mnemonicParsing="false" onAction="#onReadyClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="RAISE" textAlignment="CENTER" textFill="#d4db51">
+      <Button fx:id="raiseButton" layoutX="495.0" layoutY="355.0" mnemonicParsing="false" onAction="#onRaiseClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="RAISE" textAlignment="CENTER" textFill="#d4db51" visible="false">
          <font>
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
-      <Slider layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" />
+      <Button fx:id="checkButton" layoutX="270.0" layoutY="355.0" mnemonicParsing="false" onAction="#onCheckClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="CHECK" textAlignment="CENTER" textFill="#d4db51" visible="false">
+         <font>
+            <Font name="Bernard MT Condensed" size="14.0" />
+         </font>
+      </Button>
+      
+      <Slider fx:id="raiseSlider" layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" min="0" max="100" value="20" visible="false" />
+      
+      <Text fx:id="playerChipText4" fill="#d4db51" layoutX="252.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText1" fill="#d4db51" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText2" fill="#d4db51" layoutX="251.0" layoutY="398.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerChipText3" fill="#d4db51" layoutX="504.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+
+      <Text fx:id="raiseAmountText" fill="#d4db51" layoutX="540.0" layoutY="270.0" text="20" />
+      
+
+      <Circle fx:id="player4TurnCircle" fill="RED" layoutX="301.0" layoutY="121.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+      <Circle fx:id="player2TurnCircle" fill="RED" layoutX="300.0" layoutY="275.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+      <Circle fx:id="player3TurnCircle" fill="RED" layoutX="500.0" layoutY="202.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+      <Circle fx:id="player1TurnCircle" fill="RED" layoutX="115.0" layoutY="202.0" radius="8.0" stroke="BLACK" strokeType="INSIDE" visible="false" />
+            
+      <Text fx:id="playerBetText4" fill="#d4db51" layoutX="252.0" layoutY="141.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerBetText1" fill="#d4db51" layoutX="66.0" layoutY="219.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerBetText2" fill="#d4db51" layoutX="252.0" layoutY="295.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      <Text fx:id="playerBetText3" fill="#d4db51" layoutX="451.0" layoutY="220.0" strokeType="OUTSIDE" strokeWidth="0.0" text="0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
+      
+      <Text fx:id="potText" fill="#d4db51" layoutX="252.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="POT: 0" textAlignment="CENTER" wrappingWidth="98.5963134765625">
+         <font>
+            <Font name="Bernard MT Condensed" size="12.0" />
+         </font>
+      </Text>
    </children>
 </AnchorPane>
