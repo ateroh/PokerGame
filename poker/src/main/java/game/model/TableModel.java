@@ -139,6 +139,21 @@ public class TableModel {
                 boolean isMe = name.equals(myName);
                 boolean isHostPlayer = (i == 0);
                 int chips = 500;
+                try {
+                    Space gameSpace = client.getGameSpace();
+                    if (gameSpace != null) {
+                        Object[] chipInfo = gameSpace.queryp(
+                            new org.jspace.ActualField("playerChips"),
+                            new org.jspace.ActualField(name),
+                            new org.jspace.FormalField(Integer.class)
+                        );
+                        if (chipInfo != null) {
+                            chips = (Integer) chipInfo[2];
+                        }
+                    }
+                } catch (Exception e) {
+                    // if nothing then 500
+                }
                 result.add(new PlayerInfo(String.valueOf(i), chips, name, isMe, isHostPlayer, false));
             }
         }

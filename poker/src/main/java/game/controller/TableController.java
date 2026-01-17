@@ -566,7 +566,7 @@ public class TableController implements Initializable {
                         javafx.application.Platform.runLater(() -> {
                             updatePotDisplay(pot);
                             updatePlayerChipsDisplay(playerName, chipsLeft);
-                           // updatePlayerBetDisplay(playerName, chipsLeft);
+                            updatePlayerBetDisplay(playerName, chipsLeft);
                             
                             if (playerName.equals(model.getMyName())) {
                                 hideActionButtons();

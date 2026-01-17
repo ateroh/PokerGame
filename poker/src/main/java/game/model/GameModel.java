@@ -132,7 +132,9 @@ public class GameModel {
                     System.out.println(smallBlind.getName() + " has small blind: " + sbAmount);
 
                     try {
-                        gameSpace.put("playerAction", smallBlind.getName(), "smallBlind", sbAmount, smallBlind.getChips(), pot);
+                        for (PlayerModel p : players) {
+                            gameSpace.put("playerAction", smallBlind.getName(), "smallBlind", sbAmount, smallBlind.getChips(), pot);
+                        }
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -143,7 +145,9 @@ public class GameModel {
                     currentBet = BIG_BLIND;
                     System.out.println(bigBlind.getName() + " has big blind: " + bbAmount);
                     try {
-                        gameSpace.put("playerAction", bigBlind.getName(), "bigBlind", bbAmount, bigBlind.getChips(), pot);
+                        for (PlayerModel p : players) {
+                            gameSpace.put("playerAction", bigBlind.getName(), "bigBlind", bbAmount, bigBlind.getChips(), pot);
+                        }
                         Thread.sleep(100);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -289,7 +293,9 @@ public class GameModel {
             case "check" -> System.out.println("player:  " + playerName + " checked");
         }
         
-        gameSpace.put("playerAction", playerName, action, actualAmount, player.getChips(), pot);
+        for (PlayerModel p : players) {
+            gameSpace.put("playerAction", playerName, action, actualAmount, player.getChips(), pot);
+        }
         updateGameStatus();
         
     }
