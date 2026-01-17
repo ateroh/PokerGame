@@ -31,8 +31,7 @@ import javafx.scene.text.Text;
 public class TableController implements Initializable {
 
     @FXML
-    private Rectangle playerRedCard1_1, playerRedCard1_2, playerRedCard2_1, playerRedCard2_2,
-                    playerRedCard3_1, playerRedCard3_2, playerRedCard4_1, playerRedCard4_2;
+    private Rectangle playerRedCard1_1, playerRedCard1_2, playerRedCard2_1, playerRedCard2_2;
     
     @FXML
     private Rectangle playerCard1, playerCard2;
@@ -68,10 +67,7 @@ public class TableController implements Initializable {
 
     @FXML private Button foldButton, checkButton, callButton, raiseButton;
     @FXML private Slider raiseSlider;
-
-    @FXML 
-    private Text playerChipText1, playerChipText2, playerChipText3, playerChipText4;
-    
+   
     @FXML 
     private Text playerBetText1, playerBetText2, playerBetText3, playerBetText4;
 
