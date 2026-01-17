@@ -23,6 +23,7 @@ public class GameModel {
     public static final int SMALL_BLIND = 5;
     public static final int BIG_BLIND = 10;
     private int determineSBBB = 0;
+    private int lastRaiseAmount;
 
 
     public GameModel(Space gameSpace, DeckModel deck) {
@@ -84,6 +85,7 @@ public class GameModel {
         }
         pot = 0;
         currentBet = 0;
+        lastRaiseAmount = BIG_BLIND;
         phase = "PREFLOP";
         
         assignPositionsAndBlinds();
@@ -143,6 +145,7 @@ public class GameModel {
                     int bbAmount = bigBlind.placeBet(BIG_BLIND);
                     pot += bbAmount;
                     currentBet = BIG_BLIND;
+                    lastRaiseAmount = BIG_BLIND - SMALL_BLIND;
                     System.out.println(bigBlind.getName() + " has big blind: " + bbAmount);
                     try {
                         for (PlayerModel p : players) {
@@ -224,7 +227,8 @@ public class GameModel {
     
     public void bettingRound() throws InterruptedException {
         System.out.println("betting round");
-
+        lastRaiseAmount = BIG_BLIND;
+        
         int numPlayers = players.size();
         
         for (int i = 0; i < numPlayers; i++) {
@@ -237,9 +241,8 @@ public class GameModel {
             System.out.println(player.getName() + " turn");
             System.out.println("Pot: " + pot + ". player needs to call: " + (currentBet - player.getBetAmount()));
             
-
-                
-            gameSpace.put("yourTurn", player.getName(), currentBet, player.getChips());
+            System.out.println("DEBUG YOURTURN: Sending to " + player.getName() + " - currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
+            gameSpace.put("yourTurn", player.getName(), currentBet, player.getChips(), lastRaiseAmount);   
             
             Object[] action = gameSpace.get(
                 new ActualField("action"),
@@ -284,10 +287,14 @@ public class GameModel {
             }
                 
             case "raise" -> {
+                int previousBet = player.getBetAmount();
+                System.out.println("DEBUG BEFORE: previousBet=" + previousBet + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
                 actualAmount = player.raise(amount);
                 pot += actualAmount;
                 currentBet = player.getBetAmount();
-                System.out.println("player " + playerName + " raised to " + currentBet);
+                lastRaiseAmount = actualAmount;
+                System.out.println("DEBUG AFTER: amount from slider=" + amount + ", actualAmount=" + actualAmount + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
+                System.out.println("player " + playerName + " raised by " + actualAmount + " to " + currentBet);
             }
                 
             case "check" -> System.out.println("player:  " + playerName + " checked");

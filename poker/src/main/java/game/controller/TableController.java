@@ -420,16 +420,18 @@ public class TableController implements Initializable {
                         new ActualField("yourTurn"),
                         new ActualField(myName),
                         new FormalField(Integer.class),
+                        new FormalField(Integer.class),
                         new FormalField(Integer.class)
                     );
                     
                     if (turnInfo != null) {
                         int currentBet = (Integer) turnInfo[2];
                         int myChips = (Integer) turnInfo[3];
-                        
+                        int lastRaise = (Integer) turnInfo[4];
+                        System.out.println("DEBUG RECEIVED: currentBet=" + currentBet + ", myChips=" + myChips + ", minRaiseIncrement=" + lastRaise);
                         javafx.application.Platform.runLater(() -> {
                             statusText.setText("DIN TUR!");
-                            showActionButtons(currentBet, myChips);
+                            showActionButtons(currentBet, myChips, lastRaise);
                             showTurnIndicator(myName);
                         });
                     }
@@ -585,31 +587,39 @@ public class TableController implements Initializable {
         gameStateMonitorThread.start();
     }
 
-    private void showActionButtons(int currentBet, int myChips) {
+    private void showActionButtons(int currentBet, int myChips, int lastRaise) {
         if (foldButton != null) foldButton.setVisible(true);
         if (callButton != null) {
             callButton.setVisible(true);
             callButton.setText("CALL " + currentBet);
         }
-        if (raiseButton != null) raiseButton.setVisible(true);
-        if (raiseSlider != null) {
-            raiseSlider.setVisible(true);
-            raiseSlider.setMax(myChips);
-            raiseSlider.setMin(currentBet > 0 ? currentBet : 10);
-            raiseSlider.setValue(currentBet > 0 ? currentBet * 2 : 20);
-            raiseSlider.setShowTickLabels(false);
-            raiseSlider.setShowTickMarks(false);
 
-            raiseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+        int minRaise = currentBet + lastRaise;
+
+        if (myChips <= currentBet || myChips < minRaise) {
+            if (raiseButton != null) raiseButton.setVisible(false);
+            if (raiseSlider != null) raiseSlider.setVisible(false);
+            if (raiseAmountText != null) raiseAmountText.setVisible(false);
+        } else {
+            if (raiseButton != null) raiseButton.setVisible(true);
+            if (raiseSlider != null) {
+                raiseSlider.setVisible(true);
+                raiseSlider.setMax(myChips);
+                raiseSlider.setMin(minRaise);
+                raiseSlider.setValue(minRaise);
+                raiseSlider.setShowTickLabels(false);
+                raiseSlider.setShowTickMarks(false);
+
+                raiseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    if (raiseAmountText != null) {
+                        raiseAmountText.setText(String.valueOf(newVal.intValue()));
+                    }
+                });
                 if (raiseAmountText != null) {
-                    raiseAmountText.setText(String.valueOf(newVal.intValue()));
+                    raiseAmountText.setVisible(true);
+                    raiseAmountText.setText(String.valueOf(minRaise));
                 }
-            });
-            if (raiseAmountText != null) {
-                raiseAmountText.setVisible(true);
-                raiseAmountText.setText(String.valueOf((int)(currentBet > 0 ? currentBet : 10)));
             }
-            
         }
         // Show check button only if currentBet is 0
         if (checkButton != null) {
