@@ -100,11 +100,7 @@ public class TableController implements Initializable {
         turnCircles = new Circle[]{player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle};
         chipSlots = new Text[]{playerChipText1, playerChipText2, playerChipText3, playerChipText4};
         betSlots = new Text[]{playerBetText1, playerBetText2, playerBetText3, playerBetText4};
-        /*for (Text chipSlot : chipSlots) {
-            if (chipSlot != null) {
-                chipSlot.setText("100");
-            }
-        }*/
+
 
         // Hent host eller client reference
         Host host = CreateController.getSharedHost();
