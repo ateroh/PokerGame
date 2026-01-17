@@ -118,10 +118,17 @@ public class TableModel {
             for (Object[] p : host.getLocalPlayers()) {
                 String id = (String) p[0];
                 String name = (String) p[1];
-                int chips = (int) p[2];
                 boolean isReady = (Boolean) p[3];
                 boolean isMe = name.equals(myName);
                 boolean isHostPlayer = id.equals("0");
+
+                int chips = 500; 
+                if (host.getGame() != null) {
+                    var player = host.getGame().getPlayer(name);
+                    if (player != null) {
+                        chips = player.getChips();
+                    }   
+                }
                 result.add(new PlayerInfo(id, chips, name, isMe, isHostPlayer, isReady));
             }
         } else if (client != null) {
@@ -129,9 +136,9 @@ public class TableModel {
             List<String> names = client.getPlayerNames();
             for (int i = 0; i < names.size(); i++) {
                 String name = names.get(i);
-                int chips = 500;
                 boolean isMe = name.equals(myName);
                 boolean isHostPlayer = (i == 0);
+                int chips = 500;
                 result.add(new PlayerInfo(String.valueOf(i), chips, name, isMe, isHostPlayer, false));
             }
         }
@@ -147,9 +154,7 @@ public class TableModel {
         
         new Thread(() -> {
             try {
-                for (var player : host.getGame().getPlayers()) {
-                    host.getGameSpace().put("initialChips", player.getName(), player.getChips());
-                }
+                
                 host.getGame().playCompleteHand();
             } catch (InterruptedException e) {
             }

@@ -202,6 +202,7 @@ public class Host extends PlayerClient {
         // Broadcast shutdown til alle spillere
         try {
             gameSpace.put("shutdown", "Host har lukket serveren");
+            Thread.sleep(200);
         } catch (InterruptedException e) {
             System.err.println("Shutdown broadcast fejl: " + e.getMessage());
         }
