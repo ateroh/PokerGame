@@ -100,6 +100,12 @@ public class TableController implements Initializable {
         turnCircles = new Circle[]{player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle};
         chipSlots = new Text[]{playerChipText1, playerChipText2, playerChipText3, playerChipText4};
         betSlots = new Text[]{playerBetText1, playerBetText2, playerBetText3, playerBetText4};
+        for (Text betSlot : betSlots) {
+            if (betSlot != null) {
+                betSlot.setText("");
+                betSlot.setVisible(false);
+            }
+        }
 
 
         // Hent host eller client reference
@@ -235,6 +241,7 @@ public class TableController implements Initializable {
 
                 String displayChips = "CHIPS: " + player.chips;
                 playerChips[i].setText(displayChips);
+                chipSlots[i].setText(String.valueOf(player.chips));
 
                 // Vis/skjul kick-knap (ikke for host selv eller sig selv)
                 if (kickButtons[i] != null && model.isHost()) {
@@ -265,6 +272,7 @@ public class TableController implements Initializable {
 
     @FXML
     private void onStartClicked() {
+        hideActionButtons();
         if (model.isHost()) {
             model.startGame(); 
              //DisplayCards(); 
@@ -551,12 +559,14 @@ public class TableController implements Initializable {
                     if (action != null) {
                         String playerName = (String) action[1];
                         String actionType = (String) action[2];
+                        int betAmount = (Integer) action[3];
                         int pot = (Integer) action[5];
                         int chipsLeft = (Integer) action[4];
                         
                         javafx.application.Platform.runLater(() -> {
                             updatePotDisplay(pot);
                             updatePlayerChipsDisplay(playerName, chipsLeft);
+                           // updatePlayerBetDisplay(playerName, chipsLeft);
                             
                             if (playerName.equals(model.getMyName())) {
                                 hideActionButtons();
@@ -565,7 +575,7 @@ public class TableController implements Initializable {
                         });
                     }
                     
-                    Thread.sleep(100);
+                    Thread.sleep(50);
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -612,5 +622,20 @@ public class TableController implements Initializable {
         if (callButton != null) callButton.setVisible(false);
         if (raiseButton != null) raiseButton.setVisible(false);
         if (raiseSlider != null) raiseSlider.setVisible(false);
+        if (raiseAmountText != null) raiseAmountText.setVisible(false);
+    }
+
+    private void updatePlayerBetDisplay(String playerName, int betAmount) {
+        if (currentPlayers == null) return;
+        
+        for (int i = 0; i < currentPlayers.size(); i++) {
+            PlayerInfo p = currentPlayers.get(i);
+            if (p != null && p.name.equals(playerName)) {
+                if (i < betSlots.length && betSlots[i] != null) {
+                    betSlots[i].setText(betAmount > 0 ? String.valueOf(betAmount) : "");
+                }
+                break;
+            }
+        }
     }
 }

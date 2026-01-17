@@ -130,10 +130,24 @@ public class GameModel {
                     int sbAmount = smallBlind.placeBet(SMALL_BLIND);
                     pot += sbAmount;
                     System.out.println(smallBlind.getName() + " has small blind: " + sbAmount);
+
+                    try {
+                        gameSpace.put("playerAction", smallBlind.getName(), "smallBlind", sbAmount, smallBlind.getChips(), pot);
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    
                     int bbAmount = bigBlind.placeBet(BIG_BLIND);
                     pot += bbAmount;
                     currentBet = BIG_BLIND;
                     System.out.println(bigBlind.getName() + " has big blind: " + bbAmount);
+                    try {
+                        gameSpace.put("playerAction", bigBlind.getName(), "bigBlind", bbAmount, bigBlind.getChips(), pot);
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             case 3 ->                 {
                     
@@ -146,10 +160,22 @@ public class GameModel {
                     int sbAmount = dealer2.placeBet(SMALL_BLIND);
                     pot += sbAmount;
                     System.out.println(dealer2.getName() + " (also dealer) has small blind: " + sbAmount);
+
+                    try {
+                        gameSpace.put("playerAction", dealer2.getName(), "smallBlind", sbAmount, dealer2.getChips(), pot);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
                     int bbAmount = bigBlind.placeBet(BIG_BLIND);
                     pot += bbAmount;
                     currentBet = BIG_BLIND;
                     System.out.println(bigBlind.getName() + " has big blind: " + bbAmount);
+                    try {
+                        gameSpace.put("playerAction", bigBlind.getName(), "bigBlind", bbAmount, bigBlind.getChips(), pot);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             case 4 ->                 {
                     
@@ -166,15 +192,29 @@ public class GameModel {
                     int sbAmount = smallBlind.placeBet(SMALL_BLIND);
                     pot += sbAmount;
                     System.out.println(smallBlind.getName() + " has small blind: " + sbAmount);
+
+                    try {
+                        gameSpace.put("playerAction", smallBlind.getName(), "smallBlind", sbAmount, smallBlind.getChips(), pot);
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    
                     int bbAmount = bigBlind.placeBet(BIG_BLIND);
                     pot += bbAmount;
                     currentBet = BIG_BLIND;
                     System.out.println(bigBlind.getName() + " has big blind: " + bbAmount);
+                    
+                    try {
+                        gameSpace.put("playerAction", bigBlind.getName(), "bigBlind", bbAmount, bigBlind.getChips(), pot);
+                        Thread.sleep(50);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             default -> {
             }
         }
-    
         System.out.println("asssigned roles complete");
     }
     
@@ -193,6 +233,8 @@ public class GameModel {
             System.out.println(player.getName() + " turn");
             System.out.println("Pot: " + pot + ". player needs to call: " + (currentBet - player.getBetAmount()));
             
+
+                
             gameSpace.put("yourTurn", player.getName(), currentBet, player.getChips());
             
             Object[] action = gameSpace.get(
@@ -248,6 +290,20 @@ public class GameModel {
         }
         
         gameSpace.put("playerAction", playerName, action, actualAmount, player.getChips(), pot);
+        updateGameStatus();
+        
+    }
+
+    private void updateGameStatus() throws InterruptedException {
+        gameSpace.getp(new ActualField("gameStatus"), 
+                    new FormalField(Integer.class));
+        
+        gameSpace.put("gameStatus", pot);
+        
+        for (PlayerModel p : players) {
+            gameSpace.getp(new ActualField("playerChips"), new ActualField(p.getName()), new FormalField(Integer.class));
+            gameSpace.put("playerChips", p.getName(), p.getChips());
+        }
     }
 
     private void endHand() {
