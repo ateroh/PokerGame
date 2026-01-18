@@ -13,6 +13,8 @@ import org.jspace.SpaceRepository;
 import org.jspace.Tuple;
 
 import game.model.ChatManager;
+import game.controller.TableController;
+import javafx.application.Platform;
 
 
 /**
@@ -117,7 +119,7 @@ public class PlayerClient {
         }
     }
 
-    public void startEventListener(Runnable onKicked, Runnable onServerShutdown) {
+    public void startEventListener(TableController controller) {
         new Thread(() -> {
             while (connected && remoteGameSpace != null) {
                 try {
@@ -126,7 +128,7 @@ public class PlayerClient {
                     
                     if (kicked != null) {
                         connected = false;
-                        if (onKicked != null) onKicked.run();
+                        Platform.runLater(() -> { if (controller != null) controller.onKicked(); });
                         break;
                     }
 
@@ -135,7 +137,7 @@ public class PlayerClient {
                     
                     if (shutdown != null) {
                         connected = false;
-                        if (onServerShutdown != null) onServerShutdown.run();
+                        Platform.runLater(() -> { if (controller != null) controller.onServerShutdown(); });
                         break;
                     }
                     Thread.sleep(500);

@@ -3,7 +3,7 @@ package game.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.function.Consumer;
+
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -51,10 +51,7 @@ public class TableModel {
 
     private void setupClientEventListener() {
         if (client != null && host == null) {
-            client.startEventListener(
-                () -> Platform.runLater(() -> { if (controller != null) controller.onKicked(); }),
-                () -> Platform.runLater(() -> { if (controller != null) controller.onServerShutdown(); })
-            );
+            client.startEventListener(controller);
         }
     }
 
