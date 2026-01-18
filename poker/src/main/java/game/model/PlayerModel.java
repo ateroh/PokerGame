@@ -1,5 +1,7 @@
 package game.model;
 
+import java.util.ArrayList;
+
 public class PlayerModel {
     
 
@@ -14,7 +16,7 @@ public class PlayerModel {
         this.name = name;
         this.chips = startingChips;
         this.betAmount = 0;
-        this.hand = new HandModel();
+        this.hand = new HandModel(new ArrayList<>());
         this.role = "player";
     }
 
