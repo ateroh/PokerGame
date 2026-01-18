@@ -52,9 +52,7 @@ public class GameModel {
         return null;
     }
 
-    public List<PlayerModel> getPlayers() {
-        return players;
-    }
+    public List<PlayerModel> getPlayers() { return players; }
 
     public boolean canStart() {
         return players.size() >= minPlayers;

@@ -1,19 +1,15 @@
 package game.players;
 
-import java.util.LinkedList;
-
-import org.jspace.ActualField;
-import org.jspace.FormalField;
 import org.jspace.RandomSpace;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import game.model.DeckModel;
 import game.model.GameModel;
+import game.model.LobbyManager;
 
 /**
  * Host - server der extender PlayerClient.
- * Ligesom MasterPeer extends Peer.
  */
 public class Host extends PlayerClient {
 
@@ -25,12 +21,12 @@ public class Host extends PlayerClient {
 
     private DeckModel deck;
     private GameModel game;
-    private int idTracker = 0;
+    private LobbyManager lobbyManager;
     private boolean running = false;
 
     public Host(int port, String username) {
         super(username, String.valueOf(port));
-        this.id = generateNewPlayerId();
+        this.id = "0";
         this.hostId = this.id;
     }
 
@@ -45,13 +41,13 @@ public class Host extends PlayerClient {
         chatManager.startMessageReceiver();
         
         System.out.println("Server startet på " + uri + " - Host: " + username);
-        awaitLobbyRequest();
-        awaitLeaveRequests();
+        lobbyManager.startJoinListener();
+        lobbyManager.startLeaveListener();
     }
 
     @Override
     protected void initSpaces() {
-        super.initSpaces(); // Initializes repository, playersSpace, gameSpace and adds gate
+        super.initSpaces();
         try {
             requestSpace = new SequentialSpace();
             readySpace = new SequentialSpace();
@@ -69,152 +65,30 @@ public class Host extends PlayerClient {
     private void initModels() throws InterruptedException {
         deck = new DeckModel(deckSpace);
         deck.initialize();
-        game = new GameModel(gameSpace, deck);  
+        game = new GameModel(gameSpace, deck);
         game.addPlayer(username);
+        lobbyManager = new LobbyManager(playersSpace, requestSpace, lockSpace, gameSpace, game, id);
     }
 
-    public void awaitLobbyRequest() {
-        new Thread(() -> {
-            while (running) {
-                try {
-                    lockSpace.get(new ActualField("loginLock"));
-                    String newPlayerId = generateNewPlayerId();
-                    lockSpace.put("awaiting_" + newPlayerId);
-
-                    Object[] request = requestSpace.get(
-                        new ActualField("Helo"),
-                        new FormalField(String.class),
-                        new FormalField(String.class)
-                    );
-                    String playerName = (String) request[1];
-                    String playerUri = (String) request[2];
-
-                    if (isLobbyFull()) {
-                        requestSpace.put("Lobby is full", playerUri);
-                        lockSpace.put("loginLock");
-                        continue;
-                    }
-
-                    LinkedList<Object[]> currentPlayers = new LinkedList<>(playersSpace.queryAll(
-                        new FormalField(String.class), new FormalField(String.class),
-                        new FormalField(String.class), new FormalField(Boolean.class)
-                    ));
-
-                    requestSpace.put("Approved", playerUri);
-                    requestSpace.put("Helo", this.id, newPlayerId, currentPlayers, playerUri);
-                    playersSpace.put(newPlayerId, playerName, playerUri, false);
-                    game.addPlayer(playerName);
-
-                    System.out.println(">>> Ny spiller: " + playerName + " (" + getLobbySize() + " spillere)");
-                    broadcastPlayerList();
-                    lockSpace.put("loginLock");
-                } catch (InterruptedException e) {
-                    if (running) e.printStackTrace();
-                    break;
-                }
-            }
-        }).start();
-    }
-
-    /**
-     * Lytter efter spillere der forlader.
-     */
-    public void awaitLeaveRequests() {
-        new Thread(() -> {
-            while (running) {
-                try {
-                    Object[] leave = gameSpace.get(
-                        new ActualField("leave"),
-                        new FormalField(String.class),
-                        new FormalField(String.class)
-                    );
-                    String playerId = (String) leave[1];
-                    String playerName = (String) leave[2];
-
-                    // Fjern spiller fra playersSpace
-                    playersSpace.getp(
-                        new ActualField(playerId),
-                        new FormalField(String.class),
-                        new FormalField(String.class),
-                        new FormalField(Boolean.class)
-                    );
-
-                    System.out.println("Spiller forlod: " + playerName + " (" + getLobbySize() + " spillere)");
-                    broadcastPlayerList();
-                } catch (InterruptedException e) {
-                    if (running) e.printStackTrace();
-                    break;
-                }
-            }
-        }).start();
-    }
-
-    private void broadcastPlayerList() {
-        try {
-            gameSpace.getp(new ActualField("playerlist"), new FormalField(String.class));
-            StringBuilder sb = new StringBuilder();
-            var players = playersSpace.queryAll(
-                new FormalField(String.class), new FormalField(String.class),
-                new FormalField(String.class), new FormalField(Boolean.class)
-            );
-            for (int i = 0; i < players.size(); i++) {
-                if (i > 0) sb.append(",");
-                sb.append((String) players.get(i)[1]);
-            }
-            gameSpace.put("playerlist", sb.toString());
-        } catch (InterruptedException e) {
-        }
-    }
-    
-    public String generateNewPlayerId() { return String.valueOf(idTracker++); }
-    public boolean isLobbyFull() { return getLobbySize() >= MAX_LOBBY_SIZE; }
-
-    /**
-     * Smid en spiller ud af lobbyen.
-     */
     public void kickPlayer(String playerId) {
-        try {
-            Object[] kicked = playersSpace.getp(
-                new ActualField(playerId),
-                new FormalField(String.class),
-                new FormalField(String.class),
-                new FormalField(Boolean.class)
-            );
-            if (kicked != null) {
-                String playerName = (String) kicked[1];
-                // Send kick besked til spilleren
-                gameSpace.put("kicked", playerId, "Du blev smidt ud af hosten");
-                System.out.println("Kicked: " + playerName);
-                broadcastPlayerList();
-            }
-        } catch (InterruptedException e) {
-            System.err.println("Kick fejl: " + e.getMessage());
-        }
+        lobbyManager.kickPlayer(playerId);
     }
 
-    /**
-     * Stop serveren og send shutdown til alle spillere.
-     */
     public void stop() {
         running = false;
         connected = false;
+        if (lobbyManager != null) lobbyManager.shutdown();
 
-        // Broadcast shutdown til alle spillere
         try {
             gameSpace.put("shutdown", "Host har lukket serveren");
             Thread.sleep(200);
-        } catch (InterruptedException e) {
-            System.err.println("Shutdown broadcast fejl: " + e.getMessage());
-        }
+        } catch (InterruptedException e) {}
 
-        // Luk gate og repository
         if (repository != null) {
             try {
                 repository.closeGate(uri + "/?keep");
                 repository.shutDown();
-            } catch (Exception e) {
-                // Ignore
-            }
+            } catch (Exception e) {}
         }
         System.out.println("Server lukket");
     }
