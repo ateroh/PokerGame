@@ -95,6 +95,7 @@ public class GameModel {
         System.out.println("Dealing to: " + names);
 
         dealer.dealCards(names);
+        updateGameStatus();
     
         System.out.println("hand started");
     }
