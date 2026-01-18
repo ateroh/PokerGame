@@ -2,12 +2,14 @@ package game.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import java.util.function.Consumer;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
+import game.controller.TableController;
 import game.players.Host;
 import game.players.PlayerClient;
 import javafx.application.Platform;
@@ -27,18 +29,12 @@ public class TableModel {
     private Thread stateThread;
     private boolean isReady = false;
 
-    // Callbacks til controller/view
-    private Consumer<List<PlayerInfo>> onPlayersUpdated;
-    private Consumer<String> onStatusUpdated;
-    private Runnable onKicked;
-    private Runnable onServerShutdown;
-    private Consumer<String[]> onCardsDealt;  // [file1, file2]
-    private Consumer<int[]> onMyTurn;         // [currentBet, myChips, lastRaise]
-    private Consumer<Object[]> onPlayerAction; // [playerName, chipsLeft, pot]
+    private TableController controller;
 
-    public TableModel(Host host, PlayerClient client) {
+    public TableModel(Host host, PlayerClient client, TableController controller) {
         this.host = host;
         this.client = client;
+        this.controller = controller;
         setupClientEventListener();
     }
 
@@ -56,8 +52,8 @@ public class TableModel {
     private void setupClientEventListener() {
         if (client != null && host == null) {
             client.startEventListener(
-                () -> Platform.runLater(() -> { if (onKicked != null) onKicked.run(); }),
-                () -> Platform.runLater(() -> { if (onServerShutdown != null) onServerShutdown.run(); })
+                () -> Platform.runLater(() -> { if (controller != null) controller.onKicked(); }),
+                () -> Platform.runLater(() -> { if (controller != null) controller.onServerShutdown(); })
             );
         }
     }
@@ -70,8 +66,10 @@ public class TableModel {
                     String status = getStatusText(players.size());
 
                     Platform.runLater(() -> {
-                        if (onPlayersUpdated != null) onPlayersUpdated.accept(players);
-                        if (onStatusUpdated != null) onStatusUpdated.accept(status);
+                        if (controller != null) {
+                            controller.updatePlayerSlots(players);
+                            controller.updateStatus(status);
+                        }
                     });
 
                     Thread.sleep(host != null ? 1000 : 500);
@@ -198,7 +196,7 @@ public class TableModel {
 
                 String file1 = cards[3] + "_of_" + cards[2] + ".png";
                 String file2 = cards[5] + "_of_" + cards[4] + ".png";
-                Platform.runLater(() -> { if (onCardsDealt != null) onCardsDealt.accept(new String[]{file1, file2}); });
+                Platform.runLater(() -> { if (controller != null) controller.displayCards(file1, file2); });
             } catch (InterruptedException e) {}
         });
         cardThread.setDaemon(true);
@@ -219,7 +217,7 @@ public class TableModel {
                     );
                     if (t != null) {
                         int[] info = {(Integer)t[2], (Integer)t[3], (Integer)t[4]};
-                        Platform.runLater(() -> { if (onMyTurn != null) onMyTurn.accept(info); });
+                        Platform.runLater(() -> { if (controller != null) controller.handleMyTurn(info[0], info[1], info[2]); });
                     }
                     Thread.sleep(200);
                 } catch (InterruptedException e) { break; }
@@ -244,7 +242,9 @@ public class TableModel {
                     );
                     if (a != null) {
                         Object[] info = {a[1], a[4], a[5]}; // playerName, chipsLeft, pot
-                        Platform.runLater(() -> { if (onPlayerAction != null) onPlayerAction.accept(info); });
+                        Platform.runLater(() -> { 
+                            if (controller != null) controller.handlePlayerAction((String)info[0], (Integer)info[1], (Integer)info[2]); 
+                        });
                     }
                     Thread.sleep(50);
                 } catch (InterruptedException e) { break; }
@@ -274,12 +274,4 @@ public class TableModel {
         if (host != null) return host.getChatManager();
         return client.getChatManager();
     }
-
-    public void setOnPlayersUpdated(Consumer<List<PlayerInfo>> callback) { this.onPlayersUpdated = callback; }
-    public void setOnStatusUpdated(Consumer<String> callback) { this.onStatusUpdated = callback; }
-    public void setOnKicked(Runnable callback) { this.onKicked = callback; }
-    public void setOnServerShutdown(Runnable callback) { this.onServerShutdown = callback; }
-    public void setOnCardsDealt(Consumer<String[]> callback) { this.onCardsDealt = callback; }
-    public void setOnMyTurn(Consumer<int[]> callback) { this.onMyTurn = callback; }
-    public void setOnPlayerAction(Consumer<Object[]> callback) { this.onPlayerAction = callback; }
 }

@@ -13,7 +13,7 @@ import org.jspace.SpaceRepository;
 import org.jspace.Tuple;
 
 import game.model.ChatManager;
-import game.model.ClientEventMonitor;
+
 
 /**
  * PlayerClient - base klasse for netværksspillere.
@@ -38,7 +38,7 @@ public class PlayerClient {
     private RemoteSpace remoteRequestSpace;
     private RemoteSpace remoteReadySpace;
     private RemoteSpace remoteGameSpace;
-    private ClientEventMonitor eventMonitor;
+
 
     public PlayerClient(String serverIp, int serverPort, String username) {
         this.username = username;
@@ -118,10 +118,32 @@ public class PlayerClient {
     }
 
     public void startEventListener(Runnable onKicked, Runnable onServerShutdown) {
-        eventMonitor = new ClientEventMonitor(remoteGameSpace, id);
-        eventMonitor.setOnKicked(reason -> { connected = false; onKicked.run(); });
-        eventMonitor.setOnServerShutdown(reason -> { connected = false; onServerShutdown.run(); });
-        eventMonitor.start();
+        new Thread(() -> {
+            while (connected && remoteGameSpace != null) {
+                try {
+                    Object[] kicked = remoteGameSpace.getp(
+                        new ActualField("kicked"), new ActualField(id), new FormalField(String.class));
+                    
+                    if (kicked != null) {
+                        connected = false;
+                        if (onKicked != null) onKicked.run();
+                        break;
+                    }
+
+                    Object[] shutdown = remoteGameSpace.queryp(
+                        new ActualField("shutdown"), new FormalField(String.class));
+                    
+                    if (shutdown != null) {
+                        connected = false;
+                        if (onServerShutdown != null) onServerShutdown.run();
+                        break;
+                    }
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
     }
 
     public void sendReadyFlag(boolean isReady) {
@@ -163,7 +185,6 @@ public class PlayerClient {
         } catch (Exception e) {}
 
         connected = false;
-        if (eventMonitor != null) eventMonitor.stop();
 
         try {
             if (remoteRequestSpace != null) remoteRequestSpace.close();

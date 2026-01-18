@@ -62,16 +62,7 @@ public class TableController implements Initializable {
         PlayerClient client = (host != null) ? host : JoinController.getSharedClient();
         if (host != null) client = null;
 
-        model = new TableModel(host, client);
-
-        // Alle callbacks - Controller reagerer kun på model-events
-        model.setOnPlayersUpdated(this::updatePlayerSlots);
-        model.setOnStatusUpdated(status -> statusText.setText(status));
-        model.setOnKicked(() -> { showAlert("Kicked", "Du blev smidt ud."); goToMenu(); });
-        model.setOnServerShutdown(() -> { showAlert("Server lukket", "Hosten lukkede."); goToMenu(); });
-        model.setOnCardsDealt(this::displayCards);
-        model.setOnMyTurn(this::handleMyTurn);
-        model.setOnPlayerAction(this::handlePlayerAction);
+        model = new TableModel(host, client, this);
 
         // Skjul kick-knapper hvis man ikke er host
         boolean isHost = model.isHost();
@@ -88,40 +79,53 @@ public class TableController implements Initializable {
         model.startStateListener();
 
         //Sætter chatten op
-        model.getChatManager().setOnMessageReceived(msg ->
-            javafx.application.Platform.runLater(() -> {
-                if (chatListView != null) {
-                    chatListView.getItems().add(msg);
-                    chatListView.scrollTo(chatListView.getItems().size() - 1);
-                }
-            })
-        );
+        model.getChatManager().setController(this);
     }
 
 
-    private void displayCards(String[] files) {
-        var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + files[0]));
-        var img2 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + files[1]));
+    public void displayCards(String card1, String card2) {
+        var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card1));
+        var img2 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card2));
         playerCard1.setFill(new javafx.scene.paint.ImagePattern(img1));
         playerCard1.setVisible(true);
         playerCard2.setFill(new javafx.scene.paint.ImagePattern(img2));
         playerCard2.setVisible(true);
     }
 
-    private void handleMyTurn(int[] info) {
+    public void handleMyTurn(int currentBet, int myChips, int lastRaise) {
         statusText.setText("DIN TUR!");
-        showActionButtons(info[0], info[1], info[2]);
+        showActionButtons(currentBet, myChips, lastRaise);
         showTurnIndicator(model.getMyName());
     }
 
-    private void handlePlayerAction(Object[] info) {
-        String playerName = (String) info[0];
-        int chipsLeft = (Integer) info[1];
-        int pot = (Integer) info[2];
+    public void handlePlayerAction(String playerName, int chipsLeft, int pot) {
         if (potText != null) potText.setText("POT: " + pot);
         updatePlayerChipsDisplay(playerName, chipsLeft);
         if (playerName.equals(model.getMyName())) hideActionButtons();
         showTurnIndicator(null);
+    }
+
+    public void updateStatus(String status) {
+        if (statusText != null) statusText.setText(status);
+    }
+
+    public void onKicked() {
+        showAlert("Kicked", "Du blev smidt ud.");
+        goToMenu();
+    }
+
+    public void onServerShutdown() {
+        showAlert("Server lukket", "Hosten lukkede.");
+        goToMenu();
+    }
+
+    public void appendChatMessage(String msg) {
+        javafx.application.Platform.runLater(() -> {
+            if (chatListView != null) {
+                chatListView.getItems().add(msg);
+                chatListView.scrollTo(chatListView.getItems().size() - 1);
+            }
+        });
     }
 
     // ============ FXML Event Handlers ============
@@ -172,7 +176,7 @@ public class TableController implements Initializable {
 
     // ============ UI Helper Methods ============
 
-    private void updatePlayerSlots(List<PlayerInfo> players) {
+    public void updatePlayerSlots(List<PlayerInfo> players) {
         int meIndex = -1;
         for (int i = 0; i < players.size(); i++) if (players.get(i).isMe) { meIndex = i; break; }
 
