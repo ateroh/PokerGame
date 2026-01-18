@@ -2,7 +2,7 @@ package game.model;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.function.Consumer;
+
 
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -11,6 +11,7 @@ import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.Tuple;
 
+import game.controller.TableController;
 import game.players.PlayerClient;
 
 public class ChatManager {
@@ -19,7 +20,7 @@ public class ChatManager {
     public SpaceRepository chats;
     public PlayerClient client;
     
-    private Consumer<String> onMessageReceived;
+    private TableController controller;
 
     public ChatManager(PlayerClient client) {
         this.client = client;
@@ -27,8 +28,8 @@ public class ChatManager {
         chats = new SpaceRepository();
     }
 
-    public void setOnMessageReceived(Consumer<String> callback) {
-        this.onMessageReceived = callback;
+    public void setController(TableController controller) {
+        this.controller = controller;
     }
 
     public void startMessageReceiver() {
@@ -50,8 +51,8 @@ public class ChatManager {
 
                     String formattedMsg = senderName + ": " + message;
                     
-                    if (onMessageReceived != null) {
-                        onMessageReceived.accept(formattedMsg);
+                    if (controller != null) {
+                        controller.appendChatMessage(formattedMsg);
                     } else {
                         System.out.println(formattedMsg);
                     }
