@@ -1,6 +1,7 @@
 package game.model;
 
 import java.util.function.Consumer;
+
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
@@ -37,7 +38,7 @@ public class ClientEventMonitor {
                         break;
                     }
                     Thread.sleep(500);
-                } catch (Exception e) { break; }
+                } catch (InterruptedException e) { break; }
             }
         }).start();
     }

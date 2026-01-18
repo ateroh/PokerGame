@@ -302,13 +302,17 @@ public class GameModel {
                 
             case "raise" -> {
                 int previousBet = player.getBetAmount();
-                System.out.println("DEBUG BEFORE: previousBet=" + previousBet + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
-                actualAmount = player.raise(amount);
+                int amountToCall = currentBet - previousBet;  
+                System.out.println("check: previousBet=" + previousBet + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount + ", amountToCall=" + amountToCall);
+                
+                int totalToAdd = amountToCall + amount;  
+                actualAmount = player.raise(totalToAdd);  
                 pot += actualAmount;
                 currentBet = player.getBetAmount();
-                lastRaiseAmount = actualAmount;
-                System.out.println("DEBUG AFTER: amount from slider=" + amount + ", actualAmount=" + actualAmount + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
-                System.out.println("player " + playerName + " raised by " + actualAmount + " to " + currentBet);
+                lastRaiseAmount = amount;  
+                
+                System.out.println("error chekcs : amount from slider=" + amount + ", totalToAdd=" + totalToAdd + ", actualAmount=" + actualAmount + ", currentBet=" + currentBet + ", lastRaiseAmount=" + lastRaiseAmount);
+                System.out.println("player " + playerName + " called " + amountToCall + " and raised " + amount + " (total: " + actualAmount + ") to " + currentBet);
             }
                 
             case "check" -> System.out.println("player:  " + playerName + " checked");

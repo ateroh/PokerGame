@@ -179,9 +179,7 @@ public class TableModel {
         if (stateThread != null) stateThread.interrupt();
     }
 
-    // ============ Space-logik (forretningslogik) ============
 
-    /** Start lytning efter dealt cards */
     public void startCardListener() {
         cardThread = new Thread(() -> {
             try {
