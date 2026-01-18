@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
+import game.model.GameModel;
 import game.model.TableModel;
 import game.model.TableModel.PlayerInfo;
 import game.players.Host;
@@ -97,7 +98,6 @@ public class TableController implements Initializable {
         );
     }
 
-    // ============ UI Callbacks (reagerer på model-events) ============
 
     private void displayCards(String[] files) {
         var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + files[0]));
@@ -227,19 +227,48 @@ public class TableController implements Initializable {
             }
         }
     }
+    // bare hvis vi ikke har minraiseincrement
+    private void showActionButtons(int currentBet, int myChips) {
+        showActionButtons(currentBet, myChips, GameModel.BIG_BLIND);  
+    }
 
-    private void showActionButtons(int currentBet, int myChips, int lastRaise) {
+    private void showActionButtons(int currentBet, int myChips, int minRaiseIncrement) {
         if (foldButton != null) foldButton.setVisible(true);
-        if (callButton != null) { callButton.setVisible(true); callButton.setText("CALL " + currentBet); }
-        int minRaise = currentBet + lastRaise;
-        boolean canRaise = myChips > currentBet && myChips >= minRaise;
-        if (raiseButton != null) raiseButton.setVisible(canRaise);
-        if (raiseSlider != null) {
-            raiseSlider.setVisible(canRaise);
-            if (canRaise) { raiseSlider.setMax(myChips); raiseSlider.setMin(minRaise); raiseSlider.setValue(minRaise); }
+        if (callButton != null) {
+            callButton.setVisible(true);
+            callButton.setText("CALL " + currentBet);
         }
-        if (raiseAmountText != null) { raiseAmountText.setVisible(canRaise); raiseAmountText.setText(String.valueOf(minRaise)); }
-        if (checkButton != null) checkButton.setVisible(currentBet == 0);
+
+        if (myChips < minRaiseIncrement) {
+            if (raiseButton != null) raiseButton.setVisible(false);
+            if (raiseSlider != null) raiseSlider.setVisible(false);
+            if (raiseAmountText != null) raiseAmountText.setVisible(false);
+        } else {
+            if (raiseButton != null) raiseButton.setVisible(true);
+            if (raiseSlider != null) {
+                raiseSlider.setVisible(true);
+                raiseSlider.setMax(myChips);
+                raiseSlider.setMin(minRaiseIncrement);  // Use minRaiseIncrement directly
+                raiseSlider.setValue(minRaiseIncrement);
+                raiseSlider.setShowTickLabels(false);
+                raiseSlider.setShowTickMarks(false);
+                //hmm
+                raiseSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
+                    if (raiseAmountText != null) {
+                        raiseAmountText.setText("+" + newVal.intValue());
+                    }
+                });
+                
+                if (raiseAmountText != null) {
+                    raiseAmountText.setVisible(true);
+                    raiseAmountText.setText("+" + minRaiseIncrement);  
+                }
+            }
+        }
+        
+        if (checkButton != null) {
+            checkButton.setVisible(currentBet == 0);
+        }
     }
 
     private void hideActionButtons() {
