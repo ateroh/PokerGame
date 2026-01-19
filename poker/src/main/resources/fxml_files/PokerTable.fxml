@@ -127,11 +127,6 @@
             <Font name="Bernard MT Condensed" size="14.0" />
          </font>
       </Button>
-      <Button fx:id="checkButton" layoutX="270.0" layoutY="355.0" mnemonicParsing="false" onAction="#onCheckClicked" prefHeight="27.0" prefWidth="60.0" style="-fx-background-color: #35654d;" text="CHECK" textAlignment="CENTER" textFill="#d4db51" visible="false">
-         <font>
-            <Font name="Bernard MT Condensed" size="14.0" />
-         </font>
-      </Button>
       
       <Slider fx:id="raiseSlider" layoutX="518.0" layoutY="252.0" orientation="VERTICAL" prefHeight="92.0" prefWidth="14.0" min="0" max="100" value="20" visible="false" />
       

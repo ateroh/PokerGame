@@ -35,7 +35,7 @@ public class TableController implements Initializable {
     @FXML private Button readyButton, startButton;
     @FXML private Text potText;
     @FXML private Button kick1Button, kick2Button, kick3Button, kick4Button;
-    @FXML private Button foldButton, checkButton, callButton, raiseButton;
+    @FXML private Button foldButton, callButton, raiseButton;
     @FXML private Slider raiseSlider;
     @FXML private Text playerBetText1, playerBetText2, playerBetText3, playerBetText4;
     @FXML private Circle player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle;
@@ -200,7 +200,6 @@ public class TableController implements Initializable {
     }
 
     @FXML private void onFoldClicked() { model.sendAction("fold", 0); }
-    @FXML private void onCheckClicked() { model.sendAction("check", 0); }
     @FXML private void onCallClicked() { model.sendAction("call", 0); }
     @FXML private void onRaiseClicked() { model.sendAction("raise", (int) raiseSlider.getValue()); }
 
@@ -300,14 +299,15 @@ public class TableController implements Initializable {
             }
         }
         
-        if (checkButton != null) {
-            checkButton.setVisible(currentBet == 0);
+        if (currentBet == 0) {
+            callButton.setText("CHECK");
+        } else {
+            callButton.setText("CALL");
         }
     }
 
     private void hideActionButtons() {
         if (foldButton != null) foldButton.setVisible(false);
-        if (checkButton != null) checkButton.setVisible(false);
         if (callButton != null) callButton.setVisible(false);
         if (raiseButton != null) raiseButton.setVisible(false);
         if (raiseSlider != null) raiseSlider.setVisible(false);
