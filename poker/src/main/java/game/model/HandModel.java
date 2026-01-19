@@ -201,7 +201,8 @@ public class HandModel implements Comparable<HandModel> {
         int numKickers = 5;
         int rank = this.getRank();
 
-        // different kinds of hands have different numbers of kickers:
+        // different kinds of hands have different numbers of kickers:  
+        // HVAD ER EN KICKER????
         if (rank == 1) numKickers = 3;
         if (rank == 2) numKickers = 1;
         if (rank == 3) numKickers = 2;

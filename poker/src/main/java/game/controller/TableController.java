@@ -157,11 +157,12 @@ public class TableController implements Initializable {
         });
     }
 
-    // ============ FXML Event Handlers ============
-
     @FXML private void onSendChat() {
         String msg = chatInput.getText();
-        if (msg != null && !msg.trim().isEmpty()) { model.getChatManager().sendGlobalMessage(msg.trim()); chatInput.clear(); }
+        if (msg != null && !msg.trim().isEmpty()) { 
+            model.getChatManager().sendGlobalMessage(msg.trim()); 
+            chatInput.clear(); 
+        }
     }
 
     @FXML private void onReadyClicked() {

@@ -59,10 +59,6 @@ public class GameModel {
     }
 
     public void gameDealFlop() throws InterruptedException {
-
-        for (PlayerModel player : players) {
-            player.resetForNewHand();
-        }
         List<String> names = new ArrayList<>();
         for (PlayerModel p : players) {
             names.add(p.getName());
@@ -72,9 +68,6 @@ public class GameModel {
         System.out.println("Flop dealt");
     }
     public void gameDealTurn() throws InterruptedException {
-        for (PlayerModel player : players) {
-            player.resetForNewHand();
-        }
         List<String> names = new ArrayList<>();
         for (PlayerModel p : players) {
             names.add(p.getName());
@@ -84,9 +77,6 @@ public class GameModel {
         System.out.println("turn  dealt");
     }
     public void gameDealRiver() throws InterruptedException {
-        for (PlayerModel player : players) {
-            player.resetForNewHand();
-        }
         List<String> names = new ArrayList<>();
         for (PlayerModel p : players) {
             names.add(p.getName());
@@ -251,7 +241,7 @@ public class GameModel {
         System.out.println("asssigned roles complete");
     }
     
-   public void bettingRound() throws InterruptedException {
+    public void bettingRound() throws InterruptedException {
         System.out.println("betting round");
         if (!phase.equals("PREFLOP")) {
             lastRaiseAmount = BIG_BLIND;
@@ -287,7 +277,7 @@ public class GameModel {
                 break;
             }
 
-            if (lastPersonToRaise != -1 && playerIndex == lastPersonToRaise && PlayersActed >= activePlayers) {
+            if (lastPersonToRaise != -1 && playerIndex == lastPersonToRaise) {
                 break;
             }
             
@@ -314,9 +304,10 @@ public class GameModel {
 
             if (actionType.equalsIgnoreCase("raise")) {
             lastPersonToRaise = i % numPlayers;
-            PlayersActed = 1; // alle skal goere noget igen
+            PlayersActed = 0; // alle skal goere noget igen
             }   
             i++;
+            
         }
         
         System.out.println("betting complete. Pot: " + pot);
@@ -326,6 +317,8 @@ public class GameModel {
         }
         currentBet = 0;
     }
+
+    
     private void processAction(String playerName, String action, int amount) 
         throws InterruptedException {
         
@@ -383,33 +376,58 @@ public class GameModel {
         }
     }
 
-    private void endHand() {
+    private void endHand() throws InterruptedException {
         System.out.println("Hand complete");
         
+        List<PlayerModel> activePlayers = new ArrayList<>();
         for (PlayerModel p : players) {
-            if (!p.hasFolded()) {
-                p.addPotToPlayer(pot);
-                System.out.println("Player " + p.getName() + " wins " + pot);
-                break;
+            if (!p.hasFolded()) activePlayers.add(p);
+        }
+        
+        if (activePlayers.size() == 1) {
+            PlayerModel winner = activePlayers.get(0);
+            winner.addPotToPlayer(pot);
+            System.out.println("" + winner.getName() + " wins: " + pot + "");
+        } else {
+            PlayerModel winner = null;
+            HandModel winnerHand = null;
+            
+            for (PlayerModel p : activePlayers) {
+                HandModel hand = p.getHand();
+                if (winnerHand == null || hand.compareTo(winnerHand) > 0) {
+                    winnerHand = hand;
+                    winner = p;
+                }
+            }
+            
+            if (winner != null && winnerHand != null) {
+                winner.addPotToPlayer(pot);
+                System.out.println("Player " + winner.getName() + " wins " + pot + " with " + winnerHand.getHandName());
             }
         }
+        
         pot = 0;
+        updateGameStatus();
     }
 
     public void playCompleteHand() throws InterruptedException {
         
-        startNewHand();
+        startNewHand(); 
+
         bettingRound();  
+        Thread.sleep(500);
         gameDealFlop();
         
         bettingRound();  
-        
+        Thread.sleep(500);
         gameDealTurn();
+
         bettingRound();  
-        
+        Thread.sleep(500);
         gameDealRiver();
+
         bettingRound();  
-        
+        Thread.sleep(500);
         endHand();
     }
 
