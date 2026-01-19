@@ -56,7 +56,7 @@
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Button fx:id="kick1Button" layoutX="35.0" layoutY="235.0" mnemonicParsing="false" onAction="#onKick1Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+      <Button fx:id="kick1Button" layoutX="35.0" layoutY="265.0" mnemonicParsing="false" onAction="#onKick1Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
          <font>
             <Font size="10.0" />
          </font>
@@ -66,7 +66,7 @@
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Button fx:id="kick2Button" layoutX="285.0" layoutY="383.0" mnemonicParsing="false" onAction="#onKick2Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+      <Button fx:id="kick2Button" layoutX="360.0" layoutY="383.0" mnemonicParsing="false" onAction="#onKick2Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
          <font>
             <Font size="10.0" />
          </font>
@@ -76,7 +76,7 @@
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Button fx:id="kick3Button" layoutX="538.0" layoutY="235.0" mnemonicParsing="false" onAction="#onKick3Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+      <Button fx:id="kick3Button" layoutX="538.0" layoutY="265.0" mnemonicParsing="false" onAction="#onKick3Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
          <font>
             <Font size="10.0" />
          </font>
@@ -86,7 +86,7 @@
             <Font name="Bernard MT Condensed" size="12.0" />
          </font>
       </Text>
-      <Button fx:id="kick4Button" layoutX="285.0" layoutY="85.0" mnemonicParsing="false" onAction="#onKick4Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
+      <Button fx:id="kick4Button" layoutX="285.0" layoutY="115.0" mnemonicParsing="false" onAction="#onKick4Clicked" prefHeight="18.0" prefWidth="30.0" style="-fx-background-color: #8B0000;" text="X" textFill="WHITE" visible="false">
          <font>
             <Font size="10.0" />
          </font>
