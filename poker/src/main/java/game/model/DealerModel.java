@@ -39,11 +39,18 @@ public class DealerModel {
         
     }
 
-    public void postFlopDeal() throws InterruptedException {
+    public void dealTurn(List<String> players) throws InterruptedException {
         Card card = deck.drawCard();
-                
-        gameSpace.put("postFlopDeal", card.getSuit(),card.getRank());
+        for (String p : players) {
+            gameSpace.put("turnCard", p, card.getSuit(), card.getRank());
+        }
+    }
 
+    public void dealRiver(List<String> players) throws InterruptedException {
+        Card card = deck.drawCard();
+        for (String p : players) {
+            gameSpace.put("riverCard", p, card.getSuit(), card.getRank());
+        }
     }
     
     public int cardsRemaining() {

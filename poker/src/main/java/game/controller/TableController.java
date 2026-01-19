@@ -41,6 +41,7 @@ public class TableController implements Initializable {
     @FXML private Circle player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle;
     @FXML private Text raiseAmountText;
     @FXML private Rectangle flopCard1, flopCard2, flopCard3;
+    @FXML private Rectangle turnCard, riverCard;
 
     private Circle[] turnCircles;
     private Text[] playerSlots, playerChips, chipSlots, betSlots;
@@ -77,6 +78,7 @@ public class TableController implements Initializable {
         model.startPlayerListUpdater();
         model.startCardListener();
         model.startFlopListener();
+        model.startRiverTurnListener();
         model.startTurnListener();
         model.startStateListener();
 
@@ -86,6 +88,7 @@ public class TableController implements Initializable {
 
 
     public void displayCards(String card1, String card2) {
+        System.out.println("displayCards called: " + card1 + ", " + card2);
         var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card1));
         var img2 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card2));
         playerCard1.setFill(new javafx.scene.paint.ImagePattern(img1));
@@ -95,6 +98,7 @@ public class TableController implements Initializable {
     }
 
     public void displayFlop(String Card1, String Card2, String Card3) {
+        System.out.println("displayFlop called: " + Card1 + ", " + Card2 + ", " + Card3);
         var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card1));
         var img2 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card2));
         var img3 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card3));
@@ -104,6 +108,17 @@ public class TableController implements Initializable {
         flopCard2.setVisible(true);
         flopCard3.setFill(new javafx.scene.paint.ImagePattern(img3));
         flopCard3.setVisible(true);
+    }
+    public void displayTurn(String card) {
+        var img = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card));
+        turnCard.setFill(new javafx.scene.paint.ImagePattern(img));
+        turnCard.setVisible(true);
+    }
+
+    public void displayRiver(String card) {
+        var img = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + card));
+        riverCard.setFill(new javafx.scene.paint.ImagePattern(img));
+        riverCard.setVisible(true);
     }
 
     public void handleMyTurn(int currentBet, int myChips, int lastRaise) {

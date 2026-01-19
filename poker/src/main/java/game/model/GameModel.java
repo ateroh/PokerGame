@@ -71,10 +71,29 @@ public class GameModel {
         dealer.dealFlop(names);
         System.out.println("Flop dealt");
     }
-    public void gameDealCard() throws InterruptedException {
+    public void gameDealTurn() throws InterruptedException {
+        for (PlayerModel player : players) {
+            player.resetForNewHand();
+        }
+        List<String> names = new ArrayList<>();
+        for (PlayerModel p : players) {
+            names.add(p.getName());
+        }
         phase = "TURN";
-        dealer.postFlopDeal();
-        System.out.println("one post card dealt");
+        dealer.dealTurn(names);
+        System.out.println("turn  dealt");
+    }
+    public void gameDealRiver() throws InterruptedException {
+        for (PlayerModel player : players) {
+            player.resetForNewHand();
+        }
+        List<String> names = new ArrayList<>();
+        for (PlayerModel p : players) {
+            names.add(p.getName());
+        }
+        phase = "TURN";
+        dealer.dealRiver(names);
+        System.out.println("river dealt");
     }
 
 
@@ -250,11 +269,12 @@ public class GameModel {
             }
         }
         int i = 0;
-        while (true) {
-            PlayerModel player = players.get(i % numPlayers);
+        int maxIterations = numPlayers*10;
+        while (i < maxIterations) {
+            int playerIndex = i % numPlayers;
+            PlayerModel player = players.get(playerIndex);
             if (player.hasFolded() || player.isAllIn()) {
                 i++;
-                if (i >= numPlayers) break;
                 continue;
             }
 
@@ -262,17 +282,18 @@ public class GameModel {
             for (PlayerModel p : players) {
                 if (!p.hasFolded()) playersRemaining++;
             }
-
-            if (lastPersonToRaise != -1 && (i % numPlayers) == lastPersonToRaise && PlayersActed >= activePlayers) {
+            if (playersRemaining <= 1) {
+                System.out.println("Only one player left");
                 break;
             }
+
+            if (lastPersonToRaise != -1 && playerIndex == lastPersonToRaise && PlayersActed >= activePlayers) {
+                break;
+            }
+            
             if (lastPersonToRaise == -1 && PlayersActed >= activePlayers) {
                 break;
-            }
-            if (PlayersActed > 0 && lastPersonToRaise == -1 && player.getBetAmount() >= currentBet) {
-                i++;
-                continue;
-            }
+            }   
 
             System.out.println(player.getName() + " turn");
             System.out.println("Pot: " + pot + ". player needs to call: " + (currentBet - player.getBetAmount()));
@@ -322,7 +343,7 @@ public class GameModel {
             case "call" -> {
                 actualAmount = player.call(currentBet);
                 pot += actualAmount;
-                System.out.println(playerName + " called " + actualAmount);
+                System.out.println(playerName + " called " + actualAmount + ", chips now: " + player.getChips());
             }
                 
             case "raise" -> {
@@ -383,10 +404,10 @@ public class GameModel {
         
         bettingRound();  
         
-        gameDealCard();
+        gameDealTurn();
         bettingRound();  
         
-        gameDealCard();
+        gameDealRiver();
         bettingRound();  
         
         endHand();

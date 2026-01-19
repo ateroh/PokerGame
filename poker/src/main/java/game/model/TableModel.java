@@ -26,6 +26,7 @@ public class TableModel {
     private Thread flopListener;
     private Thread turnThread;
     private Thread stateThread;
+    private Thread riverTurnListener;
     private boolean isReady = false;
 
     private TableController controller;
@@ -221,16 +222,39 @@ public class TableModel {
         flopListener.setDaemon(true);
         flopListener.start();
     }
+    public void startRiverTurnListener() {
+        riverTurnListener = new Thread(() -> {
+            try {
+                Space gamespace = getGameSpace();
+                while (running && gamespace == null) { gamespace = getGameSpace(); Thread.sleep(50); }
+                if (!running) return;
+
+                Object[] turn = gamespace.get(new ActualField("turnCard"), new ActualField(getMyName()), new FormalField(String.class), new FormalField(String.class));
+                if (!running) return;
+                String turnFile = turn[3] + "_of_" + turn[2] + ".png";
+                Platform.runLater(() -> { if (controller != null) controller.displayTurn(turnFile); });
+
+
+                Object[] river = gamespace.get(new ActualField("riverCard"), new ActualField(getMyName()), new FormalField(String.class), new FormalField(String.class));
+                if (!running) return;
+                String riverFile = river[3] + "_of_" + river[2] + ".png";
+                Platform.runLater(() -> { if (controller != null) controller.displayRiver(riverFile); });
+            } catch (InterruptedException e) {}
+        });
+        riverTurnListener.setDaemon(true);
+        riverTurnListener.start();
+    }
+
 
     /* Start lytning efter "yourTurn" beskeder */
     public void startTurnListener() {
         turnThread = new Thread(() -> {
             while (running) {
                 try {
-                    Space gs = getGameSpace();
-                    if (gs == null) { Thread.sleep(100); continue; }
+                    Space gamessapace = getGameSpace();
+                    if (gamessapace == null) { Thread.sleep(100); continue; }
 
-                    Object[] t = gs.get(
+                    Object[] t = gamessapace.get(
                         new ActualField("yourTurn"), new ActualField(getMyName()),
                         new FormalField(Integer.class), new FormalField(Integer.class), new FormalField(Integer.class)
                     );
@@ -246,7 +270,7 @@ public class TableModel {
         turnThread.start();
     }
 
-    /** Start lytning efter playerAction beskeder */
+    /* Start lytning efter playerAction beskeder */
     public void startStateListener() {
         stateThread = new Thread(() -> {
             while (running) {

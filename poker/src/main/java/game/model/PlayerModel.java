@@ -18,6 +18,7 @@ public class PlayerModel {
         this.betAmount = 0;
         this.hand = new HandModel(new ArrayList<>());
         this.role = "player";
+        this.status = "Active";
     }
 
     public int placeBet(int amount) {
