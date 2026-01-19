@@ -40,6 +40,7 @@ public class TableController implements Initializable {
     @FXML private Text playerBetText1, playerBetText2, playerBetText3, playerBetText4;
     @FXML private Circle player1TurnCircle, player2TurnCircle, player3TurnCircle, player4TurnCircle;
     @FXML private Text raiseAmountText;
+    @FXML private Rectangle flopCard1, flopCard2, flopCard3;
 
     private Circle[] turnCircles;
     private Text[] playerSlots, playerChips, chipSlots, betSlots;
@@ -75,6 +76,7 @@ public class TableController implements Initializable {
         hideActionButtons();
         model.startPlayerListUpdater();
         model.startCardListener();
+        model.startFlopListener();
         model.startTurnListener();
         model.startStateListener();
 
@@ -90,6 +92,18 @@ public class TableController implements Initializable {
         playerCard1.setVisible(true);
         playerCard2.setFill(new javafx.scene.paint.ImagePattern(img2));
         playerCard2.setVisible(true);
+    }
+
+    public void displayFlop(String Card1, String Card2, String Card3) {
+        var img1 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card1));
+        var img2 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card2));
+        var img3 = new javafx.scene.image.Image(getClass().getResourceAsStream("/cards/" + Card3));
+        flopCard1.setFill(new javafx.scene.paint.ImagePattern(img1));
+        flopCard1.setVisible(true);
+        flopCard2.setFill(new javafx.scene.paint.ImagePattern(img2));
+        flopCard2.setVisible(true);
+        flopCard3.setFill(new javafx.scene.paint.ImagePattern(img3));
+        flopCard3.setVisible(true);
     }
 
     public void handleMyTurn(int currentBet, int myChips, int lastRaise) {

@@ -24,14 +24,16 @@ public class DealerModel {
         }
     }
 
-    public void dealFlop() {
+    public void dealFlop(List<String> players) {
         System.out.println("dealing 1st three");
         try {
             Card card1 = deck.drawCard();
             Card card2 = deck.drawCard();
             Card card3 = deck.drawCard();
-            
-            gameSpace.put("flop", card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank(), card3.getSuit(), card3.getRank());
+            System.out.println(card1 + ", " + card2 + ", " + card3);
+            for (String p : players) {
+                gameSpace.put("flop",p, card1.getSuit(), card1.getRank(), card2.getSuit(), card2.getRank(), card3.getSuit(), card3.getRank());
+            }
         } catch (InterruptedException e) {
         }
         

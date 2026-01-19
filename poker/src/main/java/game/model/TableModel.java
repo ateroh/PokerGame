@@ -3,8 +3,6 @@ package game.model;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
@@ -25,6 +23,7 @@ public class TableModel {
     private volatile boolean running = true;
     private Thread updateThread;
     private Thread cardThread;
+    private Thread flopListener;
     private Thread turnThread;
     private Thread stateThread;
     private boolean isReady = false;
@@ -197,8 +196,33 @@ public class TableModel {
         cardThread.setDaemon(true);
         cardThread.start();
     }
+    public void startFlopListener() {
+        System.out.println("");
+        flopListener = new Thread(() -> {
+            try {
+                Space gs = getGameSpace();
+                while (running && gs == null) { gs = getGameSpace(); Thread.sleep(50); }
+                if (!running) return;
 
-    /** Start lytning efter "yourTurn" beskeder */
+                Object[] flop = gs.get(
+                    new ActualField("flop"), new ActualField(getMyName()),
+                    new FormalField(String.class), new FormalField(String.class),
+                    new FormalField(String.class), new FormalField(String.class),
+                    new FormalField(String.class), new FormalField(String.class)
+                );
+                if (!running) return;
+
+                String file1 = flop[3] + "_of_" + flop[2] + ".png";
+                String file2 = flop[5] + "_of_" + flop[4] + ".png";
+                String file3 = flop[7] + "_of_" + flop[6] + ".png";
+                Platform.runLater(() -> { if (controller != null) controller.displayFlop(file1, file2, file3); });
+            } catch (InterruptedException e) {}
+        });
+        flopListener.setDaemon(true);
+        flopListener.start();
+    }
+
+    /* Start lytning efter "yourTurn" beskeder */
     public void startTurnListener() {
         turnThread = new Thread(() -> {
             while (running) {

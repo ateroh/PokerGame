@@ -59,8 +59,16 @@ public class GameModel {
     }
 
     public void gameDealFlop() throws InterruptedException {
+
+        for (PlayerModel player : players) {
+            player.resetForNewHand();
+        }
+        List<String> names = new ArrayList<>();
+        for (PlayerModel p : players) {
+            names.add(p.getName());
+        }
         phase = "FLOP";
-        dealer.dealFlop();
+        dealer.dealFlop(names);
         System.out.println("Flop dealt");
     }
     public void gameDealCard() throws InterruptedException {
@@ -231,47 +239,63 @@ public class GameModel {
         }
         
         int numPlayers = players.size();
+        int PlayersActed = 0;
+        int lastPersonToRaise = -1;
         boolean someoneRaised = true;
         boolean firstLoop = true;
-        
-        while (someoneRaised) {
-            someoneRaised = false;  // Assume no raises this loop
-            
-            for (int i = 0; i < numPlayers; i++) {
-                PlayerModel player = players.get(i);
-                
-                if (player.hasFolded() || player.isAllIn()) {
-                    continue;
-                }
-                
-                // Skip if player has already matched current bet (unless first loop)
-                if (!firstLoop && player.getBetAmount() >= currentBet && currentBet > 0) {
-                    continue;
-                }
-                
-                System.out.println(player.getName() + " turn");
-                System.out.println("Pot: " + pot + ". player needs to call: " + (currentBet - player.getBetAmount()));
-                
-                gameSpace.put("yourTurn", player.getName(), currentBet, player.getChips(), lastRaiseAmount);   
-                
-                Object[] action = gameSpace.get(
-                    new ActualField("action"),
-                    new ActualField(player.getName()),
-                    new FormalField(String.class),
-                    new FormalField(Integer.class)
-                );
-                
-                String actionType = (String) action[2];
-                int amount = (Integer) action[3];
-                
-                processAction(player.getName(), actionType, amount);
-                
-                if (actionType.equalsIgnoreCase("raise")) {
-                    someoneRaised = true;  // Loop again
-                }
+        int activePlayers = 0;
+        for (PlayerModel p : players) {
+            if (!p.hasFolded() && !p.isAllIn()) {
+                activePlayers++;
+            }
+        }
+        int i = 0;
+        while (true) {
+            PlayerModel player = players.get(i % numPlayers);
+            if (player.hasFolded() || player.isAllIn()) {
+                i++;
+                if (i >= numPlayers) break;
+                continue;
             }
 
-            firstLoop = false;  
+            int playersRemaining = 0;
+            for (PlayerModel p : players) {
+                if (!p.hasFolded()) playersRemaining++;
+            }
+
+            if (lastPersonToRaise != -1 && (i % numPlayers) == lastPersonToRaise && PlayersActed >= activePlayers) {
+                break;
+            }
+            if (lastPersonToRaise == -1 && PlayersActed >= activePlayers) {
+                break;
+            }
+            if (PlayersActed > 0 && lastPersonToRaise == -1 && player.getBetAmount() >= currentBet) {
+                i++;
+                continue;
+            }
+
+            System.out.println(player.getName() + " turn");
+            System.out.println("Pot: " + pot + ". player needs to call: " + (currentBet - player.getBetAmount()));
+            
+            gameSpace.put("yourTurn", player.getName(), currentBet, player.getChips(), lastRaiseAmount);   
+            
+            Object[] action = gameSpace.get(
+                new ActualField("action"),
+                new ActualField(player.getName()),
+                new FormalField(String.class),
+                new FormalField(Integer.class)
+            );
+            String actionType = (String) action[2];
+            int amount = (Integer) action[3];
+
+            processAction(player.getName(), actionType, amount);
+            PlayersActed++;
+
+            if (actionType.equalsIgnoreCase("raise")) {
+            lastPersonToRaise = i % numPlayers;
+            PlayersActed = 1; // alle skal goere noget igen
+            }   
+            i++;
         }
         
         System.out.println("betting complete. Pot: " + pot);
@@ -352,10 +376,11 @@ public class GameModel {
     }
 
     public void playCompleteHand() throws InterruptedException {
+        
         startNewHand();
         bettingRound();  
-        
         gameDealFlop();
+        
         bettingRound();  
         
         gameDealCard();
