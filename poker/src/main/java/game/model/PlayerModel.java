@@ -22,7 +22,7 @@ public class PlayerModel {
     }
 
     public int placeBet(int amount) {
-        if (amount > chips) {
+        if (amount >= chips) {
             int temp = chips;
             betAmount += chips;
             chips = 0;
