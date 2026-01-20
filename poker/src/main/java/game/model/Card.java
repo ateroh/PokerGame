@@ -22,11 +22,11 @@ public class Card {
     }
 
     public int getValue() {
-        return switch (rank) {
-            case "A" -> 14;
-            case "K" -> 13;
-            case "Q" -> 12;
-            case "J" -> 11;
+        return switch (rank.toLowerCase()) {
+            case "ace", "a" -> 14;
+            case "king", "k" -> 13;
+            case "queen", "q" -> 12;
+            case "jack", "j" -> 11;
             case "10" -> 10;
             case "9" -> 9;
             case "8" -> 8;

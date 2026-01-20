@@ -22,7 +22,7 @@ import javafx.application.Platform;
  */
 public class PlayerClient {
 
-    protected String ip = "0.0.0.0"; // "localhost";
+    protected String ip = "localhost"; // "localhost";
     protected String port;
     protected String uri;
     protected String username;

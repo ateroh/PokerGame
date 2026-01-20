@@ -3,7 +3,6 @@ package game.model;
 import java.io.IOException;
 import java.util.List;
 
-
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
