@@ -22,7 +22,7 @@ import javafx.application.Platform;
  */
 public class PlayerClient {
 
-    protected String ip = "10.209.156.236"; // "localhost";
+    protected String ip = "0.0.0.0"; // "localhost";
     protected String port;
     protected String uri;
     protected String username;
@@ -43,7 +43,7 @@ public class PlayerClient {
 
 
     public PlayerClient(String serverIp, int serverPort, String username) {
-        serverIp = "10.209.156.236";
+        //serverIp = "0.0.0.0";
         this.username = username;
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);
