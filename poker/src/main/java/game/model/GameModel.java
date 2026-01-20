@@ -394,7 +394,7 @@ public class GameModel {
             
             for (PlayerModel p : activePlayers) {
                 HandModel hand = p.getHand();
-                if (hand != null && (winnerHand == null || hand.compareTo(winnerHand) > 0)) {
+                if (winnerHand == null || hand.compareTo(winnerHand) > 0) {
                     winnerHand = hand;
                     winner = p;
                 }
