@@ -27,6 +27,7 @@ public class TableModel {
     private Thread turnThread;
     private Thread stateThread;
     private Thread riverTurnListener;
+    private Thread handResultThread;
     private boolean isReady = false;
 
     private TableController controller;
@@ -125,7 +126,17 @@ public class TableModel {
     public void startGame() {
         if (host == null) return;
         new Thread(() -> {
-            try { host.getGame().playCompleteHand(); } catch (InterruptedException e) {}
+            try { host.getGame().runGameLoop(); } catch (InterruptedException e) {}
+        }).start();
+    }
+
+    /**
+     * Starter en ny runde manuelt (kan kaldes af controller efter en hånd er slut)
+     */
+    public void startNewRound() {
+        if (host == null) return;
+        new Thread(() -> {
+            try { host.getGame().startNewRound(); } catch (InterruptedException e) {}
         }).start();
     }
 
@@ -172,6 +183,9 @@ public class TableModel {
         if (cardThread != null) cardThread.interrupt();
         if (turnThread != null) turnThread.interrupt();
         if (stateThread != null) stateThread.interrupt();
+        if (handResultThread != null) handResultThread.interrupt();
+        if (flopListener != null) flopListener.interrupt();
+        if (riverTurnListener != null) riverTurnListener.interrupt();
     }
 
 
@@ -295,6 +309,40 @@ public class TableModel {
         });
         stateThread.setDaemon(true);
         stateThread.start();
+    }
+
+    /* Start lytning efter håndresultater (vinder af runden) */
+    public void startHandResultListener() {
+        handResultThread = new Thread(() -> {
+            while (running) {
+                try {
+                    Space gs = getGameSpace();
+                    if (gs == null) { Thread.sleep(100); continue; }
+
+                    Object[] result = gs.get(
+                        new ActualField("handResult"),
+                        new ActualField(getMyName()),
+                        new FormalField(String.class),  // winnerName
+                        new FormalField(String.class),  // handName
+                        new FormalField(Integer.class)  // potAmount
+                    );
+
+                    if (result != null) {
+                        String winnerName = (String) result[2];
+                        String handName = (String) result[3];
+                        int potAmount = (Integer) result[4];
+
+                        Platform.runLater(() -> {
+                            if (controller != null) {
+                                controller.handleHandResult(winnerName, handName, potAmount);
+                            }
+                        });
+                    }
+                } catch (InterruptedException e) { break; }
+            }
+        });
+        handResultThread.setDaemon(true);
+        handResultThread.start();
     }
 
     /** Send en action til gameSpace */

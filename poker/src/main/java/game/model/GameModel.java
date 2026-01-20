@@ -388,21 +388,32 @@ public class GameModel {
             PlayerModel winner = activePlayers.get(0);
             winner.addPotToPlayer(pot);
             System.out.println("" + winner.getName() + " wins: " + pot + "");
+            announceWinner(winner.getName(), "alle andre foldede", pot);
         } else {
+            // Byg hånden for hver aktiv spiller baseret på community cards og hole cards
+            List<Card> communityCards = dealer.getCommunityCards();
+
             PlayerModel winner = null;
             HandModel winnerHand = null;
             
             for (PlayerModel p : activePlayers) {
-                HandModel hand = p.getHand();
-                if (hand != null && (winnerHand == null || hand.compareTo(winnerHand) > 0)) {
-                    winnerHand = hand;
-                    winner = p;
+                List<Card> holeCards = dealer.getPlayerHoleCards(p.getName());
+                if (!holeCards.isEmpty()) {
+                    HandModel hand = new HandModel(communityCards, holeCards);
+                    p.setHand(hand);
+                    System.out.println(p.getName() + " har hånd: " + hand.getHandName() + " (rank: " + hand.getRank() + ")");
+
+                    if (winnerHand == null || hand.compareTo(winnerHand) > 0) {
+                        winnerHand = hand;
+                        winner = p;
+                    }
                 }
             }
             
             if (winner != null && winnerHand != null) {
                 winner.addPotToPlayer(pot);
                 System.out.println("Player " + winner.getName() + " wins " + pot + " with " + winnerHand.getHandName());
+                announceWinner(winner.getName(), winnerHand.getHandName(), pot);
             }
         }
         
@@ -410,9 +421,19 @@ public class GameModel {
         updateGameStatus();
     }
 
+    private void announceWinner(String winnerName, String handName, int potAmount) throws InterruptedException {
+        // Sender vinder information til alle spillere
+        for (PlayerModel p : players) {
+            gameSpace.put("handResult", p.getName(), winnerName, handName, potAmount);
+        }
+    }
+
     public void playCompleteHand() throws InterruptedException {
         
-        startNewHand(); 
+        // Reset deck for ny hånd
+        dealer.resetForNewHand();
+
+        startNewHand();
 
         bettingRound();  
         Thread.sleep(500);
@@ -429,6 +450,59 @@ public class GameModel {
         bettingRound();  
         Thread.sleep(500);
         endHand();
+    }
+
+    /**
+     * Starter en ny runde (bruges til at fortsætte spillet efter en hånd er afsluttet)
+     */
+    public void startNewRound() throws InterruptedException {
+        // Fjern spillere uden chips
+        players.removeIf(p -> p.getChips() <= 0);
+
+        if (!canStart()) {
+            System.out.println("Ikke nok spillere til at fortsætte");
+            gameSpace.put("gameOver", "Ikke nok spillere");
+            return;
+        }
+
+        // Rotér dealer/blind positioner
+        rotateDealerButton();
+
+        // Spil en ny hånd
+        playCompleteHand();
+    }
+
+    /**
+     * Kører en fuld poker session med flere hænder indtil kun én spiller har chips
+     */
+    public void runGameLoop() throws InterruptedException {
+        while (canStart()) {
+            playCompleteHand();
+
+            // Fjern spillere der er busted
+            int playersWithChips = 0;
+            for (PlayerModel p : players) {
+                if (p.getChips() > 0) playersWithChips++;
+            }
+
+            if (playersWithChips < minPlayers) {
+                System.out.println("Spillet er slut - ikke nok spillere med chips");
+                break;
+            }
+
+            // Rotér dealer button
+            rotateDealerButton();
+
+            // Vent lidt før næste hånd
+            Thread.sleep(3000);
+        }
+
+        // Annoncér spillet slut
+        gameSpace.put("gameOver", "Spillet er slut");
+    }
+
+    private void rotateDealerButton() {
+        determineSBBB = (determineSBBB + 1) % players.size();
     }
 
     public int getPot() {

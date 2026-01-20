@@ -81,6 +81,7 @@ public class TableController implements Initializable {
         model.startRiverTurnListener();
         model.startTurnListener();
         model.startStateListener();
+        model.startHandResultListener();
 
         //Sætter chatten op
         model.getChatManager().setController(this);
@@ -132,6 +133,39 @@ public class TableController implements Initializable {
         updatePlayerChipsDisplay(playerName, chipsLeft);
         if (playerName.equals(model.getMyName())) hideActionButtons();
         showTurnIndicator(null);
+    }
+
+    public void handleHandResult(String winnerName, String handName, int potAmount) {
+        // Vis vinderen i status
+        String message = winnerName + " vinder " + potAmount + " med " + handName + "!";
+        if (statusText != null) statusText.setText(message);
+
+        // Vis en popup med resultatet
+        showAlert("Runden er slut", message);
+
+        // Nulstil kortene på bordet til næste runde
+        resetTableCards();
+    }
+
+    private void resetTableCards() {
+        // Skjul spillerens kort
+        if (playerCard1 != null) playerCard1.setVisible(false);
+        if (playerCard2 != null) playerCard2.setVisible(false);
+
+        // Skjul community cards
+        if (flopCard1 != null) flopCard1.setVisible(false);
+        if (flopCard2 != null) flopCard2.setVisible(false);
+        if (flopCard3 != null) flopCard3.setVisible(false);
+        if (turnCard != null) turnCard.setVisible(false);
+        if (riverCard != null) riverCard.setVisible(false);
+
+        // Nulstil pot tekst
+        if (potText != null) potText.setText("POT: 0");
+
+        // Genstart listeners til nye kort
+        model.startCardListener();
+        model.startFlopListener();
+        model.startRiverTurnListener();
     }
 
     public void updateStatus(String status) {
