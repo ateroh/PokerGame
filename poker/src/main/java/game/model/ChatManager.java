@@ -96,13 +96,24 @@ public class ChatManager {
                     for (Object[] p : players) {
                         String pid = (String) p[0];
                         String puri = (String) p[2];
-                        addChatToRepo(pid, puri);
-                        Space peerChat = getPeerChat(pid);
-                        if (peerChat != null) {
+
+                        // Hvis det er hosten selv, send direkte til lokalt chat space
+                        if (pid.equals(client.getId())) {
                             try {
-                                peerChat.put(senderId, message, true);
+                                chat.put(senderId, message, true);
                             } catch (Exception e) {
-                                System.err.println("Fejl ved broadcast til " + pid + ": " + e.getMessage());
+                                System.err.println("Fejl ved lokal broadcast: " + e.getMessage());
+                            }
+                        } else {
+                            // Send til andre spilleres remote chat space
+                            addChatToRepo(pid, puri);
+                            Space peerChat = getPeerChat(pid);
+                            if (peerChat != null) {
+                                try {
+                                    peerChat.put(senderId, message, true);
+                                } catch (Exception e) {
+                                    System.err.println("Fejl ved broadcast til " + pid + ": " + e.getMessage());
+                                }
                             }
                         }
                     }
@@ -112,7 +123,7 @@ public class ChatManager {
             }
         }).start();
     }
-    
+
     private String resolveName(String id) {
         // Simple linear search in local players
         List<Object[]> players = client.getLocalPlayers();

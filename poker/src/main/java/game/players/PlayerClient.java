@@ -43,7 +43,8 @@ public class PlayerClient {
 
 
     public PlayerClient(String serverIp, int serverPort, String username) {
-        //serverIp = "0.0.0.0";
+        //serverIp = "2.tcp.eu.ngrok.io";
+        //serverPort = 12006;
         this.username = username;
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);
@@ -112,6 +113,8 @@ public class PlayerClient {
             readySpace = remoteReadySpace;
             connected = true;
 
+            // Forbind til global chat på hosten
+            chatManager.connectToGlobalChat(serverUri);
             chatManager.startMessageReceiver();
             return true;
         } catch (Exception e) {
