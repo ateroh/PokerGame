@@ -22,7 +22,7 @@ import javafx.application.Platform;
  */
 public class PlayerClient {
 
-    protected String ip = "localhost"; // "localhost";
+    protected String ip = "0.0.0.0"; // "localhost";
     protected String port;
     protected String uri;
     protected String username;
@@ -208,4 +208,8 @@ public class PlayerClient {
     public String getUri() { return uri; }
     public boolean isConnected() { return connected; }
     public ChatManager getChatManager() { return chatManager; }
+
+    public boolean isHost() {
+        return id.equals(hostId);
+    }
 }
