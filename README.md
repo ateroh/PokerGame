@@ -76,6 +76,17 @@ Once the user acts (fold/call/raise), the client produces an “action” tuple 
 Object[] action = gameSpace.get(new ActualField("action"), new ActualField(playerName), ...);
 ```
 
+![img.png](img.png)
+
+1. The server (Gamemodel) starts the round by putting a “yourturn” tuple specifically for player1 into the jspace.
+2. Notice player2 on the right. They try ti take their turn immediately but because their specific tuple isnt there yet, they hit a blocking operation. They’re paused.
+3. Player1 however successfully matches and retrieves their token. They perform and action like “raise” and put a action tuple back into the space.
+4. The server consumes this action. Crucially the server also blocks until this response arrives ensuring it never gets ahead of the game state.
+5. After updating the game state the server places a new specific token for player2 
+6. Finally player2s blocking call is satisfied. They wake up and can now take their turn.
+
+This demonstrates how we use blocking operations as a synchronization primitive to force a strict sequential protocol over an asynchronous network.
+
 # Programming language and coordination mechanism
 
 > If you use a tuple space library from [pSpaces](https://github.com/pSpaces) just write something like "This project is based on the tuple space library X" where X is jSpace, dotSpace, etc.
