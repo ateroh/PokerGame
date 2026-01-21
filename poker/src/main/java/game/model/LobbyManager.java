@@ -21,18 +21,20 @@ public class LobbyManager {
     private final Space gameSpace;
     private final GameModel game;
     private final String hostId;
+    private final ChatManager chatManager;
 
     private int idTracker = 1; // Host har ID 0
     private volatile boolean running = true;
 
     public LobbyManager(SequentialSpace playersSpace, SequentialSpace requestSpace,
-                        SequentialSpace lockSpace, Space gameSpace, GameModel game, String hostId) {
+                        SequentialSpace lockSpace, Space gameSpace, GameModel game, String hostId, ChatManager chatManager) {
         this.playersSpace = playersSpace;
         this.requestSpace = requestSpace;
         this.lockSpace = lockSpace;
         this.gameSpace = gameSpace;
         this.game = game;
         this.hostId = hostId;
+        this.chatManager = chatManager;
     }
 
     /** Start lytning efter join-requests */
@@ -62,6 +64,9 @@ public class LobbyManager {
                         new FormalField(String.class), new FormalField(String.class),
                         new FormalField(String.class), new FormalField(Boolean.class)
                     ));
+
+                    // Ensure chat mailbox exists BEFORE sending approval
+                    chatManager.createMailbox(newPlayerId);
 
                     requestSpace.put("Approved", playerUri);
                     requestSpace.put("Helo", hostId, newPlayerId, currentPlayers, playerUri);

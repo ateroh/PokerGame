@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -22,7 +23,7 @@ public class ChatManager {
     
     // Host specific
     private SpaceRepository hostRepository;
-    private Map<String, SequentialSpace> clientMailboxes = new HashMap<>();
+    private Map<String, SequentialSpace> clientMailboxes = new ConcurrentHashMap<>();
 
     // Client specific
     private RemoteSpace remoteGlobalChat; // To send messages to host
@@ -44,6 +45,16 @@ public class ChatManager {
 
     public void setupHost(SpaceRepository repository) {
         this.hostRepository = repository;
+    }
+
+    public void createMailbox(String playerId) {
+        clientMailboxes.computeIfAbsent(playerId, k -> {
+            SequentialSpace mailbox = new SequentialSpace();
+            if (hostRepository != null) {
+                hostRepository.add("chat_" + k, mailbox);
+            }
+            return mailbox;
+        });
     }
 
     public void setupClient(String serverUri, String myId) {
@@ -116,7 +127,7 @@ public class ChatManager {
                             chat.put(senderId, message, true);
                         } else {
                             // Clients: send til deres mailbox på hosten
-                            ensureMailboxExists(pid);
+                            createMailbox(pid);
                             SequentialSpace mailbox = clientMailboxes.get(pid);
                             if (mailbox != null) {
                                 mailbox.put(senderId, message, true);
@@ -131,13 +142,7 @@ public class ChatManager {
     }
 
     private void ensureMailboxExists(String pid) {
-        if (!clientMailboxes.containsKey(pid)) {
-            SequentialSpace mailbox = new SequentialSpace();
-            clientMailboxes.put(pid, mailbox);
-            if (hostRepository != null) {
-                hostRepository.add("chat_" + pid, mailbox);
-            }
-        }
+        createMailbox(pid);
     }
 
     private String resolveName(String id) {

@@ -31,7 +31,6 @@ public class PlayerClient {
     protected String username;
     protected String id;
     protected String hostId;
-
     protected SpaceRepository repository;
     protected SequentialSpace playersSpace;
     protected SequentialSpace gameSpace;
@@ -46,8 +45,8 @@ public class PlayerClient {
 
 
     public PlayerClient(String serverIp, int serverPort, String username) {
-        //serverIp = "2.tcp.eu.ngrok.io";
-        //serverPort = 12006;
+        serverIp = "0.tcp.eu.ngrok.io";
+        serverPort = 16627;
         this.username = username;
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);

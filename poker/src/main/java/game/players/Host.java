@@ -71,7 +71,7 @@ public class Host extends PlayerClient {
         deck.initialize();
         game = new GameModel(gameSpace, deck);
         game.addPlayer(username);
-        lobbyManager = new LobbyManager(playersSpace, requestSpace, lockSpace, gameSpace, game, id);
+        lobbyManager = new LobbyManager(playersSpace, requestSpace, lockSpace, gameSpace, game, id, chatManager);
     }
 
     public void kickPlayer(String playerId) {
