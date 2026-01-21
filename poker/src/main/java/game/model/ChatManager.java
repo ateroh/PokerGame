@@ -1,7 +1,9 @@
 package game.model;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -15,40 +17,53 @@ import game.players.PlayerClient;
 
 public class ChatManager {
     
-    public SequentialSpace chat;
-    public SequentialSpace globalChatSpace; // For host: modtager beskeder fra alle klienter
-    public SpaceRepository chats;
-    public PlayerClient client;
+    public SequentialSpace chat; // Local chat for display
+    public SequentialSpace globalChatSpace; // Host: receives all messages
     
+    // Host specific
+    private SpaceRepository hostRepository;
+    private Map<String, SequentialSpace> clientMailboxes = new HashMap<>();
+
+    // Client specific
+    private RemoteSpace remoteGlobalChat; // To send messages to host
+    private RemoteSpace personalMailbox;  // To receive messages from host
+    
+    public PlayerClient client;
     private TableController controller;
-    private RemoteSpace remoteGlobalChat; // For klienter: forbindelse til hostens globalchat
     private volatile boolean running = true;
 
     public ChatManager(PlayerClient client) {
         this.client = client;
         chat = new SequentialSpace();
         globalChatSpace = new SequentialSpace();
-        chats = new SpaceRepository();
     }
 
     public void setController(TableController controller) {
         this.controller = controller;
     }
 
-    public void connectToGlobalChat(String serverUri) {
+    public void setupHost(SpaceRepository repository) {
+        this.hostRepository = repository;
+    }
+
+    public void setupClient(String serverUri, String myId) {
         try {
             remoteGlobalChat = new RemoteSpace(serverUri + "/globalchat?keep");
+            personalMailbox = new RemoteSpace(serverUri + "/chat_" + myId + "?keep");
         } catch (IOException e) {
-            System.err.println("Kunne ikke forbinde til global chat: " + e.getMessage());
+            System.err.println("Chat setup failed: " + e.getMessage());
         }
     }
 
     public void startMessageReceiver() {
         running = true;
         new Thread(() -> {
+            Space source = (client.isHost()) ? chat : personalMailbox;
+            if (source == null) return;
+
             while (running && client.isConnected()) {
                 try {
-                    Tuple messageTuple = new Tuple(chat.get(
+                    Tuple messageTuple = new Tuple(source.get(
                         new FormalField(String.class), // sender id
                         new FormalField(String.class), // message
                         new FormalField(Boolean.class) // isAllChat
@@ -57,9 +72,7 @@ public class ChatManager {
                     String senderId = messageTuple.getElementAt(String.class, 0);
                     String message = messageTuple.getElementAt(String.class, 1);
 
-                    // Try to resolve name from client's player list
                     String senderName = resolveName(senderId);
-
                     String formattedMsg = senderName + ": " + message;
                     
                     if (controller != null) {
@@ -75,8 +88,10 @@ public class ChatManager {
         }).start();
     }
 
-    // For host: lyt efter beskeder i globalChatSpace og broadcast til alle spillere
+    // For host: lyt efter beskeder i globalChatSpace og broadcast til alle spillere via mailboxes
     public void startGlobalChatBroadcaster() {
+        if (!client.isHost()) return;
+        
         running = true;
         new Thread(() -> {
             while (running && client.isConnected()) {
@@ -91,29 +106,20 @@ public class ChatManager {
                     String senderName = messageTuple.getElementAt(String.class, 1);
                     String message = messageTuple.getElementAt(String.class, 2);
 
-                    // Broadcast til alle spillere (inkl. host selv)
+                    // Broadcast til alle spillere
                     List<Object[]> players = client.getLocalPlayers();
                     for (Object[] p : players) {
                         String pid = (String) p[0];
-                        String puri = (String) p[2];
 
-                        // Hvis det er hosten selv, send direkte til lokalt chat space
                         if (pid.equals(client.getId())) {
-                            try {
-                                chat.put(senderId, message, true);
-                            } catch (Exception e) {
-                                System.err.println("Fejl ved lokal broadcast: " + e.getMessage());
-                            }
+                            // Host selv: send til lokal chat
+                            chat.put(senderId, message, true);
                         } else {
-                            // Send til andre spilleres remote chat space
-                            addChatToRepo(pid, puri);
-                            Space peerChat = getPeerChat(pid);
-                            if (peerChat != null) {
-                                try {
-                                    peerChat.put(senderId, message, true);
-                                } catch (Exception e) {
-                                    System.err.println("Fejl ved broadcast til " + pid + ": " + e.getMessage());
-                                }
+                            // Clients: send til deres mailbox på hosten
+                            ensureMailboxExists(pid);
+                            SequentialSpace mailbox = clientMailboxes.get(pid);
+                            if (mailbox != null) {
+                                mailbox.put(senderId, message, true);
                             }
                         }
                     }
@@ -122,6 +128,16 @@ public class ChatManager {
                 }
             }
         }).start();
+    }
+
+    private void ensureMailboxExists(String pid) {
+        if (!clientMailboxes.containsKey(pid)) {
+            SequentialSpace mailbox = new SequentialSpace();
+            clientMailboxes.put(pid, mailbox);
+            if (hostRepository != null) {
+                hostRepository.add("chat_" + pid, mailbox);
+            }
+        }
     }
 
     private String resolveName(String id) {
@@ -134,14 +150,7 @@ public class ChatManager {
     }
 
     public void sendMessage(String message, String receiverId, Boolean isAllChat) {
-        try {
-            Space peerChat = getPeerChat(receiverId);
-            if(peerChat != null) {
-                peerChat.put(client.getId(), message, isAllChat);
-            }
-        } catch(Exception e) {
-            System.err.println("Error sending message: " + e.getMessage());
-        }
+        // Unused in current implementation, but could be adapted for DMs
     }
 
     public void sendGlobalMessage(String message) {
@@ -160,17 +169,6 @@ public class ChatManager {
         }
     }
 
-    public void addChatToRepo(String peerId, String peerUri){
-        // Only add if not exists
-        if(chats.get(peerId) == null) {
-            try {
-                chats.add(peerId, new RemoteSpace(peerUri + "/chat?keep"));
-            } catch (IOException e) {
-                System.err.println("Could not connect to chat for " + peerId);
-            }
-        }
-    }
-
     public SequentialSpace getChat(){
         return chat;
     }
@@ -179,16 +177,13 @@ public class ChatManager {
         return globalChatSpace;
     }
 
-    public Space getPeerChat(String peerId){
-        return chats.get(peerId);
-    }
-
     public void stop() {
         running = false;
         if (remoteGlobalChat != null) {
-            try {
-                remoteGlobalChat.close();
-            } catch (IOException e) {}
+            try { remoteGlobalChat.close(); } catch (IOException e) {}
+        }
+        if (personalMailbox != null) {
+            try { personalMailbox.close(); } catch (IOException e) {}
         }
     }
 }

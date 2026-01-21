@@ -59,6 +59,8 @@ public class Host extends PlayerClient {
             repository.add("ready", readySpace);
             repository.add("deck", deckSpace);
             repository.add("globalchat", chatManager.getGlobalChatSpace());
+            
+            chatManager.setupHost(repository);
         } catch (Exception e) {
             System.err.println("initSpaces fejl: " + e.getMessage());
         }

@@ -3,6 +3,9 @@ package game.players;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.Inet4Address;
 
 import org.jspace.ActualField;
 import org.jspace.FormalField;
@@ -22,7 +25,7 @@ import javafx.application.Platform;
  */
 public class PlayerClient {
 
-    protected String ip = "0.0.0.0"; // "localhost";
+    protected String ip = getPublicIp();
     protected String port;
     protected String uri;
     protected String username;
@@ -65,8 +68,7 @@ public class PlayerClient {
             gameSpace = new SequentialSpace();
             repository = new SpaceRepository();
             repository.add("game", gameSpace);
-            repository.add("chat", chatManager.getChat());
-            repository.addGate(uri + "/?keep");
+            repository.addGate("tcp://0.0.0.0:" + port + "/?keep");
         } catch (Exception e) {
             System.err.println("initSpaces fejl: " + e.getMessage());
         }
@@ -114,7 +116,7 @@ public class PlayerClient {
             connected = true;
 
             // Forbind til global chat på hosten
-            chatManager.connectToGlobalChat(serverUri);
+            chatManager.setupClient(serverUri, id);
             chatManager.startMessageReceiver();
             return true;
         } catch (Exception e) {
@@ -182,6 +184,22 @@ public class PlayerClient {
         return playersSpace.queryAll(
             new FormalField(String.class), new FormalField(String.class),
             new FormalField(String.class), new FormalField(Boolean.class));
+    }
+
+    private static String getPublicIp() {
+        try {
+            return NetworkInterface.networkInterfaces()
+                .filter(i -> {
+                    try { return !i.isLoopback() && i.isUp(); } catch (Exception e) { return false; }
+                })
+                .flatMap(NetworkInterface::inetAddresses)
+                .filter(a -> a instanceof Inet4Address)
+                .map(InetAddress::getHostAddress)
+                .findFirst()
+                .orElse(InetAddress.getLocalHost().getHostAddress());
+        } catch (Exception e) {
+            return "127.0.0.1";
+        }
     }
 
     public void disconnect() {
