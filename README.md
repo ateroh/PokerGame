@@ -47,6 +47,35 @@ Running on multiple computers video: https://www.youtube.com/shorts/76W1ZtZfgFk
 
 > Most likely you have been addressing and sovling many coordination challenges. Which one was the most challenging? Which solution are you most proud?. Choose just one. Use a few diagrams to illustrate the challenge and the solution. Use a few paragraphs to explain it. Refer to the materials from the mandatory materials (modules 1-3) and recommended materials (modules 4-6, Klempmann's course, etc.). That is, use the precise terminology and add references. This part shold not be longer than 2 screens (approx.).
 
+We encountered several coordination challenges while building the distributed PokerGame, as for example our lobbymanagement where we ensured atomic registration of players using a global lock pattern (lecture 2). This ensures “mutual exclusion” when multiple clients try to join simultaneously.
+
+We also have our private game rooms where we used private space pattern (lecture 3). The server acts as a space repository that creates new game spaces and distributes their URIs via a remotespace.
+
+And lastly our Deckmanagement where we implemented randomspace (lecture 1) for random retrieval which our project relies largely on for the non deterministic nature of tuple retrieval, when multiple matching tuples exists in the form of game cards.
+
+The most challenging was however our distributed sequential turn management. The challenge was ensuring sequential consistency in our environment. In poker the game flows allows only one specific player to act at a time based on strict rules and order (Small blind, big blind and so on) effectively implementing a strict protocol (Lecture 4). The solution was ordered coordination via blocking operations.
+
+The GameModel (server) and players (clients) operates in a producer-consumer relationship (lecture 2), passing a “turn” token.
+
+When the token has been passed the server explicitly targets the next player. It puts a directed tuple containing the specific player names:
+
+```java
+gameSpace.put("yourTurn", player.getName(), currentBet, 
+player.getChips(), lastRaiseAmount);
+```
+All clients posses a listener thread, but they utilize pattern matching (lecture 1) to filter the stream. A client uses a blocking operation “get” (lecture 2) to wait until a tuple matches its specific local name. This effectively pauses the clients execution until it is their turn.
+
+```java
+Object[] t = gamessapace.get(
+   new ActualField("yourTurn"), new ActualField(getMyName()), // Pattern 
+   new FormalField(Integer.class), ...
+```
+Once the user acts (fold/call/raise), the client produces an “action” tuple back. The server, acting as a consumer (lecture 2) for this specific response has been waiting (blocking). It consumes this tuple, updates the global state and then proceeds to produce the turn for the next player.
+
+```java
+Object[] action = gameSpace.get(new ActualField("action"), new ActualField(playerName), ...);
+```
+
 # Programming language and coordination mechanism
 
 > If you use a tuple space library from [pSpaces](https://github.com/pSpaces) just write something like "This project is based on the tuple space library X" where X is jSpace, dotSpace, etc.
