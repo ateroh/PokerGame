@@ -16,14 +16,18 @@ import game.players.PlayerClient;
 public class ChatManager {
     
     public SequentialSpace chat;
+    public SequentialSpace globalChatSpace; // For host: modtager beskeder fra alle klienter
     public SpaceRepository chats;
     public PlayerClient client;
     
     private TableController controller;
+    private RemoteSpace remoteGlobalChat; // For klienter: forbindelse til hostens globalchat
+    private volatile boolean running = true;
 
     public ChatManager(PlayerClient client) {
         this.client = client;
         chat = new SequentialSpace();
+        globalChatSpace = new SequentialSpace();
         chats = new SpaceRepository();
     }
 
@@ -31,9 +35,18 @@ public class ChatManager {
         this.controller = controller;
     }
 
+    public void connectToGlobalChat(String serverUri) {
+        try {
+            remoteGlobalChat = new RemoteSpace(serverUri + "/globalchat?keep");
+        } catch (IOException e) {
+            System.err.println("Kunne ikke forbinde til global chat: " + e.getMessage());
+        }
+    }
+
     public void startMessageReceiver() {
+        running = true;
         new Thread(() -> {
-            while (client.isConnected()) {
+            while (running && client.isConnected()) {
                 try {
                     Tuple messageTuple = new Tuple(chat.get(
                         new FormalField(String.class), // sender id
@@ -43,7 +56,6 @@ public class ChatManager {
                     
                     String senderId = messageTuple.getElementAt(String.class, 0);
                     String message = messageTuple.getElementAt(String.class, 1);
-
 
                     // Try to resolve name from client's player list
                     String senderName = resolveName(senderId);
@@ -56,6 +68,44 @@ public class ChatManager {
                         System.out.println(formattedMsg);
                     }
 
+                } catch (InterruptedException e) {
+                    break;
+                }
+            }
+        }).start();
+    }
+
+    // For host: lyt efter beskeder i globalChatSpace og broadcast til alle spillere
+    public void startGlobalChatBroadcaster() {
+        running = true;
+        new Thread(() -> {
+            while (running && client.isConnected()) {
+                try {
+                    Tuple messageTuple = new Tuple(globalChatSpace.get(
+                        new FormalField(String.class), // sender id
+                        new FormalField(String.class), // sender name
+                        new FormalField(String.class)  // message
+                    ));
+
+                    String senderId = messageTuple.getElementAt(String.class, 0);
+                    String senderName = messageTuple.getElementAt(String.class, 1);
+                    String message = messageTuple.getElementAt(String.class, 2);
+
+                    // Broadcast til alle spillere (inkl. host selv)
+                    List<Object[]> players = client.getLocalPlayers();
+                    for (Object[] p : players) {
+                        String pid = (String) p[0];
+                        String puri = (String) p[2];
+                        addChatToRepo(pid, puri);
+                        Space peerChat = getPeerChat(pid);
+                        if (peerChat != null) {
+                            try {
+                                peerChat.put(senderId, message, true);
+                            } catch (Exception e) {
+                                System.err.println("Fejl ved broadcast til " + pid + ": " + e.getMessage());
+                            }
+                        }
+                    }
                 } catch (InterruptedException e) {
                     break;
                 }
@@ -84,16 +134,18 @@ public class ChatManager {
     }
 
     public void sendGlobalMessage(String message) {
-        // Send to all  players
-        List<Object[]> players = client.getLocalPlayers();
-        for (Object[] p : players) {
-            String pid = (String)p[0];
-            String puri = (String)p[2];
-
-            // Connect if not already connected
-            addChatToRepo(pid, puri);
-
-            sendMessage(message, pid, true);
+        try {
+            // Hvis vi er host, send direkte til globalChatSpace
+            if (client.isHost()) {
+                globalChatSpace.put(client.getId(), client.getUsername(), message);
+            } else if (remoteGlobalChat != null) {
+                // Hvis vi er klient, send til hostens globalchat
+                remoteGlobalChat.put(client.getId(), client.getUsername(), message);
+            } else {
+                System.err.println("Ikke forbundet til global chat");
+            }
+        } catch (InterruptedException e) {
+            System.err.println("Fejl ved afsendelse af besked: " + e.getMessage());
         }
     }
 
@@ -101,11 +153,6 @@ public class ChatManager {
         // Only add if not exists
         if(chats.get(peerId) == null) {
             try {
-                // peerUri e.g. tcp://ip:port
-                // Chat space is at peerUri + "/chat?keep"
-                // Standard PlayerClient sets gate at uri + "/?keep"
-                // And adds "chat" to repo.
-                // So RemoteSpace string is uri + "/chat?keep"
                 chats.add(peerId, new RemoteSpace(peerUri + "/chat?keep"));
             } catch (IOException e) {
                 System.err.println("Could not connect to chat for " + peerId);
@@ -117,7 +164,20 @@ public class ChatManager {
         return chat;
     }
 
+    public SequentialSpace getGlobalChatSpace() {
+        return globalChatSpace;
+    }
+
     public Space getPeerChat(String peerId){
         return chats.get(peerId);
+    }
+
+    public void stop() {
+        running = false;
+        if (remoteGlobalChat != null) {
+            try {
+                remoteGlobalChat.close();
+            } catch (IOException e) {}
+        }
     }
 }

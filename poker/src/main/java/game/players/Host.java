@@ -39,7 +39,8 @@ public class Host extends PlayerClient {
         connected = true;
         
         chatManager.startMessageReceiver();
-        
+        chatManager.startGlobalChatBroadcaster();
+
         System.out.println("Server startet på " + uri + " - Host: " + username);
         lobbyManager.startJoinListener();
         lobbyManager.startLeaveListener();
@@ -57,6 +58,7 @@ public class Host extends PlayerClient {
             repository.add("requests", requestSpace);
             repository.add("ready", readySpace);
             repository.add("deck", deckSpace);
+            repository.add("globalchat", chatManager.getGlobalChatSpace());
         } catch (Exception e) {
             System.err.println("initSpaces fejl: " + e.getMessage());
         }
@@ -105,4 +107,7 @@ public class Host extends PlayerClient {
 
     @Override
     public Space getGameSpace() { return gameSpace; }
+
+    @Override
+    public boolean isHost() { return true; }
 }
