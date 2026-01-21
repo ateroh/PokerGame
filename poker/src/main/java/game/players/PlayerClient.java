@@ -22,7 +22,7 @@ import javafx.application.Platform;
  */
 public class PlayerClient {
 
-    protected String ip = "localhost"; // "localhost";
+    protected String ip = "0.0.0.0"; // "localhost";
     protected String port;
     protected String uri;
     protected String username;
@@ -43,7 +43,8 @@ public class PlayerClient {
 
 
     public PlayerClient(String serverIp, int serverPort, String username) {
-        //serverIp = "0.0.0.0";
+        serverIp = "2.tcp.eu.ngrok.io";
+        serverPort = 12006;
         this.username = username;
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);

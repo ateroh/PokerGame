@@ -178,8 +178,8 @@ public class GameModel {
             case 3 -> {
                     
                     PlayerModel bigBlind = players.get(1);
-                    PlayerModel dealer2 = players.get(2);
-                    PlayerModel regular = players.get(0);
+                    PlayerModel dealer2 = players.get(0);
+                    PlayerModel regular = players.get(2);
                     bigBlind.setPosition("bigBlind");
                     dealer2.setPosition("dealer");
                     regular.setPosition("player");
@@ -204,10 +204,10 @@ public class GameModel {
                     }
                 }
             case 4 -> {
-                    PlayerModel bigBlind = players.get(3);
+                    PlayerModel bigBlind = players.get(1);
                     PlayerModel regular = players.get(0);
-                    PlayerModel dealer2 = players.get(1);
-                    PlayerModel smallBlind = players.get(2);
+                    PlayerModel dealer2 = players.get(2);
+                    PlayerModel smallBlind = players.get(3);
 
                     bigBlind.setPosition("bigBlind");
                     regular.setPosition("player");
