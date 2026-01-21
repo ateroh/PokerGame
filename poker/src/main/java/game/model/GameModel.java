@@ -12,6 +12,9 @@ import org.jspace.Space;
 public class GameModel {
     
     private Space gameSpace;
+    private List<Card> communityCards = new ArrayList<>();
+    private java.util.Map<String, Card[]> playerHoleCards = new java.util.HashMap<>();
+
     private int pot;
     private int currentBet;
     private List<PlayerModel> players;
@@ -141,8 +144,8 @@ public class GameModel {
             switch (numPlayers) {
                 case 2 ->                 {
                     
-                    PlayerModel bigBlind = players.get(0);
-                    PlayerModel smallBlind = players.get(1);
+                    PlayerModel bigBlind = players.get(1);
+                    PlayerModel smallBlind = players.get(0);
                     bigBlind.setPosition("bigBlind");
                     smallBlind.setPosition("smallBlind");
                     int sbAmount = smallBlind.placeBet(SMALL_BLIND);
@@ -172,11 +175,11 @@ public class GameModel {
                         e.printStackTrace();
                     }
                 }
-            case 3 ->                 {
+            case 3 -> {
                     
-                    PlayerModel bigBlind = players.get(0);
-                    PlayerModel dealer2 = players.get(1);
-                    PlayerModel regular = players.get(2);
+                    PlayerModel bigBlind = players.get(1);
+                    PlayerModel dealer2 = players.get(2);
+                    PlayerModel regular = players.get(0);
                     bigBlind.setPosition("bigBlind");
                     dealer2.setPosition("dealer");
                     regular.setPosition("player");
@@ -200,12 +203,11 @@ public class GameModel {
                         e.printStackTrace();
                     }
                 }
-            case 4 ->                 {
-                    
-                    PlayerModel bigBlind = players.get(0);
-                    PlayerModel regular = players.get(1);
-                    PlayerModel dealer2 = players.get(2);
-                    PlayerModel smallBlind = players.get(3);
+            case 4 -> {
+                    PlayerModel bigBlind = players.get(3);
+                    PlayerModel regular = players.get(0);
+                    PlayerModel dealer2 = players.get(1);
+                    PlayerModel smallBlind = players.get(2);
 
                     bigBlind.setPosition("bigBlind");
                     regular.setPosition("player");
@@ -390,20 +392,50 @@ public class GameModel {
             System.out.println("" + winner.getName() + " wins: " + pot + "");
             announceWinner(winner.getName(), "alle andre foldede", pot);
         } else {
-            // Byg hånden for hver aktiv spiller baseret på community cards og hole cards
-            List<Card> communityCards = dealer.getCommunityCards();
+            List<Card> community = new ArrayList<>();
+            Object[] flop = gameSpace.getp(new ActualField("communityFlop"),
+                new FormalField(String.class), new FormalField(String.class),
+                new FormalField(String.class), new FormalField(String.class),
+                new FormalField(String.class), new FormalField(String.class));
+            if (flop != null) {
+                community.add(new Card((String)flop[1], (String)flop[2]));
+                community.add(new Card((String)flop[3], (String)flop[4]));
+                community.add(new Card((String)flop[5], (String)flop[6]));
+            }
+            Object[] turn = gameSpace.getp(new ActualField("communityTurn"),
+                new FormalField(String.class), new FormalField(String.class));
+            if (turn != null) {
+                community.add(new Card((String)turn[1], (String)turn[2]));
+            }
+            Object[] river = gameSpace.getp(new ActualField("communityRiver"),
+                new FormalField(String.class), new FormalField(String.class));
+            if (river != null) {
+                community.add(new Card((String)river[1], (String)river[2]));
+            }
 
             PlayerModel winner = null;
             HandModel winnerHand = null;
             
             for (PlayerModel p : activePlayers) {
-                List<Card> holeCards = dealer.getPlayerHoleCards(p.getName());
-                if (!holeCards.isEmpty()) {
-                    HandModel hand = new HandModel(communityCards, holeCards);
-                    p.setHand(hand);
-                    System.out.println(p.getName() + " har hånd: " + hand.getHandName() + " (rank: " + hand.getRank() + ")");
+                // Get this player's hole cards
+                Object[] hole = gameSpace.getp(new ActualField("holeCards"), new ActualField(p.getName()),
+                    new FormalField(String.class), new FormalField(String.class),
+                    new FormalField(String.class), new FormalField(String.class));
+                
+                if (hole != null) {
+                    List<Card> holeCards = new ArrayList<>();
+                    holeCards.add(new Card((String)hole[2], (String)hole[3]));
+                    holeCards.add(new Card((String)hole[4], (String)hole[5]));
 
-                    if (winnerHand == null || hand.compareTo(winnerHand) > 0) {
+                    System.out.println("DEBUG hole cards: " + hole[0] + ", " + hole[1] + ", " + hole[2] + ", " + hole[3]);
+                    System.out.println("DEBUG community size: " + community.size());
+                    for (Card c : community) {
+                        System.out.println("DEBUG community card: suit=" + c.getSuit() + " rank=" + c.getRank() + " value=" + c.getValue());
+                    }
+                    
+                    HandModel hand = new HandModel(community, holeCards);
+                    System.out.println(p.getName() + " has: " + hand.getHandName());
+                    if(winnerHand == null || hand.compareTo(winnerHand) > 0) {
                         winnerHand = hand;
                         winner = p;
                     }
@@ -472,9 +504,7 @@ public class GameModel {
         playCompleteHand();
     }
 
-    /**
-     * Kører en fuld poker session med flere hænder indtil kun én spiller har chips
-     */
+    // Kører en fuld poker session med flere hænder indtil kun en spiller har chips
     public void runGameLoop() throws InterruptedException {
         while (canStart()) {
             playCompleteHand();
@@ -508,5 +538,12 @@ public class GameModel {
     public int getPot() {
         return pot;
     }
-    
+
+    public void storeHoleCards(String playerName, Card c1, Card c2) {
+        playerHoleCards.put(playerName, new Card[]{c1, c2});
+    }
+
+    public void storeCommunityCard(Card card) {
+        communityCards.add(card);
+    }
 }
