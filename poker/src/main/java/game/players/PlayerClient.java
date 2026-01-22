@@ -45,8 +45,8 @@ public class PlayerClient {
 
 
     public PlayerClient(String serverIp, int serverPort, String username) {
-        serverIp = "7.tcp.eu.ngrok.io"; //"192.168.153.11"
-        serverPort = 15713;
+        serverIp = "2.tcp.eu.ngrok.io"; //"192.168.153.11"
+        serverPort = 17205;
         this.username = username;
         this.port = String.valueOf(9100 + (int)(Math.random() * 900));
         this.uri = formatURI(ip, port);
