@@ -12,9 +12,13 @@ Our application follows a model view controller architecture, with TableModel co
 # Contributors
 
 > Project contributors:
-Limejensen 	(s240617@student.dtu.dk)
-BrinchyBoy 	(s246072@student.dtu.dk)
-ateroh 		(s245803@student.dtu.dk)
+> 
+>Limejensen 	(s240617@student.dtu.dk)
+> 
+>BrinchyBoy 	(s246072@student.dtu.dk)
+>
+>ateroh 		(s245803@student.dtu.dk)
+
 
 Contributions:
 * All members have had equal contributions in all major aspects of the project.
@@ -39,8 +43,6 @@ Overall, our team placed a strong emphasis on close collaboration and shared pro
 
 
 # Main coordination challenge
-
-> 
 
 We encountered several coordination challenges while building the distributed PokerGame, as for example our lobby management where we ensured atomic registration of players using a global lock pattern (lecture 2). This ensures “mutual exclusion” when multiple clients try to join simultaneously.
 We also have our private game rooms where we use a private space pattern (lecture 3). The server acts as a space repository that creates new game spaces and distributes their URIs via a remote space to clients.
@@ -89,10 +91,14 @@ This demonstrates how we use blocking operations as a synchronization primitive 
 
 # Installation
 
-> The requirements are as follows: you need Java 21 or higher, Maven, Javafx, jSpace Library. 
+The requirements are as follows: you need Java 21 or higher, Maven, Javafx, jSpace Library. 
+
 In order to run you should first clone the repository. The next step is to build the project with maven. 
+
 Make sure you are cd’ed in PokerGame/poker and run “maven clean compile”. To run you simply run “mvn javafx:run”
-To play locally on only one computer follow these steps:
+
+
+__To play locally on only one computer follow these steps:__
 1. Make sure ip on line 28 in PlayerClient.java is set to local host:
 ```java
 protected String ip = “localhost”;
@@ -105,7 +111,7 @@ public PlayerClient(String serverIp, int serverPort, String username) {
 ```
 3. Run the project in the poker folder with command “mvn javafx:run”
 
-To play over lan with multiple computers follow these steps:
+__To play over lan with multiple computers follow these steps:__
 1. Set the ip on line 28 in playerclient.java to 0.0.0.0 to make sure the host computer listens to all incoming ip addresses. 
 ```java
 protected String ip = “0.0.0.0”;
@@ -116,7 +122,7 @@ serverIp = "192.168.153.11";
 ```
 4. Run the project in the poker folder with command “mvn javafx:run”
 
-To play the game online, the easiest approach is by the use of Ngrok. Simply install ngrok following the install guidelines given on the website. 
+__To play the game online, the easiest approach is by the use of Ngrok. Simply install ngrok following the install guidelines given on the website.__
 
 1. Go into the project fold “poker"
 2. Run “ngrok tcp 9001” or a different port number from 9000 to 9999. Ngrok will give you. (may vary depending on os. Check link)
@@ -128,7 +134,12 @@ To play the game online, the easiest approach is by the use of Ngrok. Simply ins
 ** If you have any issues, please contact our 24/7 support: +45 25 36 00 09 **
 
 # References 
-> https://ngrok.com/docs/universal-gateway/tcp
+1. https://ngrok.com/docs/universal-gateway/tcp
+2. https://www.cs.cornell.edu/courses/cs100/2003su/assignment5/solution/PokerHand.java
+3. Lecture 1 tuple spaces 
+4. Lecture 2 (Chatmanager, PlayerClient, Host)
+5. Lecture 3 SpaceRepository, Gate, Remotespace 
+6. Lecture 4 Loginflowinte
 
 # IMPORTANT!
 
