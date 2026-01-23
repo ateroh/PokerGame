@@ -114,7 +114,7 @@ public class LobbyManager {
         }).start();
     }
 
-    /** Kick en spiller */
+    // Kick en spiller 
     public void kickPlayer(String playerId) {
         if (playerId.equals("0")) return; // Kan ikke kicke host
         try {
@@ -135,7 +135,7 @@ public class LobbyManager {
         }
     }
 
-    /** Broadcast spillerliste til alle */
+    // Broadcast spillerliste til alle 
     public void broadcastPlayerList() {
         try {
             gameSpace.getp(new ActualField("playerlist"), new FormalField(String.class));

@@ -484,9 +484,7 @@ public class GameModel {
         endHand();
     }
 
-    /**
-     * Starter en ny runde (bruges til at fortsætte spillet efter en hånd er afsluttet)
-     */
+    //Starter en ny runde (bruges til at fortsætte spillet efter en hånd er afsluttet)
     public void startNewRound() throws InterruptedException {
         // Fjern spillere uden chips
         players.removeIf(p -> p.getChips() <= 0);
@@ -520,7 +518,7 @@ public class GameModel {
                 break;
             }
 
-            // Rotér dealer button
+            // Roter dealer button
             rotateDealerButton();
 
             // Vent lidt før næste hånd
