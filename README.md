@@ -17,12 +17,12 @@ BrinchyBoy 	(s246072@student.dtu.dk)
 ateroh 		(s245803@student.dtu.dk)
 
 Contributions:
-All members have had equal contributions in all major aspects of the project.
-Design of main coordination aspects: 	Limejensen, BrinchyBoy and ateroh
-Coding of main coordination aspects:	Limejensen, BrinchyBoy and ateroh
-Documentation (this README file): 		Limejensen, BrinchyBoy and ateroh
-Videos: 					Limejensen, BrinchyBoy and ateroh
-Other aspects (e.g. coding of UI, etc.): 	Limejensen, BrinchyBoy and ateroh
+* All members have had equal contributions in all major aspects of the project.
+* Design of main coordination aspects: 	Limejensen, BrinchyBoy and ateroh
+* Coding of main coordination aspects:	Limejensen, BrinchyBoy and ateroh
+* Documentation (this README file): 		Limejensen, BrinchyBoy and ateroh
+* Videos: 					Limejensen, BrinchyBoy and ateroh
+* Other aspects (e.g. coding of UI, etc.): 	Limejensen, BrinchyBoy and ateroh
 
 All members of the group have worked collaboratively on every aspect of the assignment. We primarily used a mob-programming approach, meeting either in person or on Discord, where we streamed our IDEs (Visual Studio Code or IntelliJ) while working together. 
 As a result, individual GitHub contributions may not fully reflect the extent of each member's involvement. While there were occasional instances where someone worked independently on a specific task, these contributions were minor and always discussed and reviewed by the group. 
