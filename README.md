@@ -3,7 +3,7 @@
 
 # Abstract
 
-This project implements a distributed multiplayer Texas hold'em poker game using jSpace tuple spaces for coordination and JavaFX for the graphical user interface. The system follows a model view controller paired with a client-server architecture where a central host manages game state through multiple tuple spaces, while remote clients via TCP in order to play. 
+This project implements a distributed multiplayer Texas hold'em poker game using jSpace tuple spaces for coordination and JavaFX for the graphical user interface. The system follows a model view controller paired with a client-server architecture where a central host manages game state through multiple tuple spaces, while remote clients connect via TCP in order to play. 
 
 The host themselves is also a client. The host maintains several unique spaces: a random space for the deck of cards enabling arbitrary shuffling, sequential spaces for player registration and game state management. Players (clients) connect by exchanging tuples with the host, receiving unique identifiers and current game information specific to them upon entering a lobby. The lobbyManager handles these join and leave operations with locking mechanisms to prevent multiple threads from retrieving the same data concurrently.
 
@@ -49,18 +49,18 @@ Overall, our team placed a strong emphasis on close collaboration and shared pro
 
 We encountered several coordination challenges while building the distributed PokerGame, as for example our lobby management where we ensured atomic registration of players using a global lock pattern (lecture 2). This ensures “mutual exclusion” when multiple clients try to join simultaneously.
 
-We also have our private game rooms where we use a private space pattern (lecture 3). The server acts as a space repository that creates new game spaces and distributes their URIs via a remote space to clients.
+We also implemented private game rooms where we use a private space pattern (lecture 3). The server acts as a space repository that creates new game spaces and distributes their URIs via a remote space to clients.
 
-And lastly our Deckmanagement where we implemented randomspace (lecture 1) for random retrieval which our project relies largely on for the non deterministic nature of tuple retrieval, when multiple matching tuples exist in the form of game cards. 
+Lastly, we implemented Deckmanagement using a randomspace (lecture 1) for random retrieval, which our project relies largely on for the non deterministic nature of tuple retrieval when multiple matching tuples exist in the form of game cards.
 
 
 __The most challenging was however our distributed sequential turn management__
 
-The challenge was ensuring sequential consistency in our environment. In poker the game flow allows only one specific player to act at a time based on strict rules and order (Small blind, big blind and so on) effectively implementing a strict protocol (Lecture 4). The solution was ordered coordination via blocking operations. 
+Our biggest challenge was ensuring sequential consistency in our environment. In poker, the game flow allows only one specific player to act at a time, based on strict rules and order, (Small blind, big blind and so on) effectively implementing a strict protocol (Lecture 4). The solution was ordered coordination via blocking operations.
 
 The GameModel (server) and players (clients) operate in a producer-consumer relationship (lecture 2), passing a “turn” token.
 
-When the token has been passed the server explicitly targets the next player. It puts a directed tuple containing the specific player names:
+When the token has been passed, the server explicitly targets the next player. It puts a directed tuple containing the specific player names:
 
 
 ```java
@@ -74,7 +74,7 @@ Object[] t = gamessapace.get(
    new ActualField("yourTurn"), new ActualField(getMyName()), // Pattern 
    new FormalField(Integer.class), ...
 ```
-Once the user acts (fold/call/raise), the client produces an “action” tuple back. The server, acting as a consumer (lecture 2) for this specific response had been waiting (blocking). It consumes this tuple, updates the global state and then proceeds to produce the turn for the next player.  
+Once the user acts (fold/call/raise), the client produces an “action” tuple back. The server, acting as a waiting (blocked) consumer, (lecture 2) consumes this specific response. It consumes this tuple, updates the global state, and then proceeds to produce the turn for the next player.
 
 ```java
 Object[] action = gameSpace.get(new ActualField("action"), new ActualField(playerName), ...);
@@ -84,11 +84,11 @@ Object[] action = gameSpace.get(new ActualField("action"), new ActualField(playe
 This diagram illustrates our solution to the distributed sequential turn management challenge. So to recap shortly again:
 
 1. The server (Gamemodel) starts the round by putting a “yourturn” tuple specifically for player1 into the jspace.
-2. Notice player2 on the right. They try ti take their turn immediately but because their specific tuple isnt there yet, they hit a blocking operation. They’re paused.
-3. Player1 however successfully matches and retrieves their token. They perform and action like “raise” and put a action tuple back into the space.
-4. The server consumes this action. Crucially the server also blocks until this response arrives ensuring it never gets ahead of the game state.
-5. After updating the game state the server places a new specific token for player2 
-6. Finally player2s blocking call is satisfied. They wake up and can now take their turn.
+2. Notice player2 on the right. They try to take their turn immediately, but because their specific tuple isn't there yet, they hit a blocking operation. They’re paused.
+3. Player1 however, successfully matches and retrieves their token. They perform an action, like “raise”, and put an action tuple back into the space.
+4. The server consumes this action. Crucially, the server also blocks until this response arrives, ensuring it never gets ahead of the game state.
+5. After updating the game state, the server places a new specific token for player2.
+6. Finally, player2’s blocking call is satisfied. They wake up and can now take their turn.
 
 This demonstrates how we use blocking operations as a synchronization primitive to force a strict sequential protocol over an asynchronous network.
 
@@ -119,7 +119,8 @@ public PlayerClient(String serverIp, int serverPort, String username) {
 3. Run the project in the poker folder with command “mvn javafx:run”
 
 __To play over lan with multiple computers follow these steps:__
-1. Set the ip on line 28 in playerclient.java to 0.0.0.0 to make sure the host computer listens to all incoming ip addresses.
+
+1. Set the ip on line 28 in playerclient.java to 0.0.0.0 to make sure the host computer listens to all incoming ip addresses.  Only the host should do this, but it won’t cause an issue if everyone does the same.
 ```java
 protected String ip = “0.0.0.0”;
 ```
