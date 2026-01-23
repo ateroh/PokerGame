@@ -91,47 +91,7 @@ This demonstrates how we use blocking operations as a synchronization primitive 
 
 # Installation
 
-The requirements are as follows: you need Java 21 or higher, Maven, Javafx, jSpace Library. 
-
-In order to run you should first clone the repository. The next step is to build the project with maven. 
-
-Make sure you are cd’ed in PokerGame/poker and run “maven clean compile”. To run you simply run “mvn javafx:run”
-
-
-__To play locally on only one computer follow these steps:__
-1. Make sure ip on line 28 in PlayerClient.java is set to local host:
-```java
-protected String ip = “localhost”;
-```
-2. Make sure serverIp and serverPort is commented out or deleted from line 48 and 49.
-```java
-public PlayerClient(String serverIp, int serverPort, String username) {
-  //serverIp = "2.tcp.eu.ngrok.io"; //"192.168.153.11"
-   //serverPort = 17205;
-```
-3. Run the project in the poker folder with command “mvn javafx:run”
-
-__To play over lan with multiple computers follow these steps:__
-1. Set the ip on line 28 in playerclient.java to 0.0.0.0 to make sure the host computer listens to all incoming ip addresses. 
-```java
-protected String ip = “0.0.0.0”;
-```
-2. Set serverIP on line 48 to the host’s computer local ip adress. This can be found by either typing in “ifconfig” on mac and linux and “ipconfig” on windows terminal. For example:
-```java
-serverIp = "192.168.153.11";
-```
-4. Run the project in the poker folder with command “mvn javafx:run”
-
-__To play the game online, the easiest approach is by the use of Ngrok. Simply install ngrok following the install guidelines given on the website.__
-
-1. Go into the project fold “poker"
-2. Run “ngrok tcp 9001” or a different port number from 9000 to 9999. Ngrok will give you. (may vary depending on os. Check link)
-3. Change serverIP in line 48 on PlayerClient.java to whatever the ip ngrok gives, for example ```java serverIp = "2.tcp.eu.ngrok.io"; ```
-4. Change serverport on line 49 in PlayerClient.java to whatever port number ngrok gives you for example ```java serverPort = 17205;```
-5. Make sure ip on line 28 in PlayerClient.java is calling our getPublicIp() method. ```java protected String ip = getPublicIp();```
-6. Make sure everyone has the same settings (The host does not need to follow the steps in the public PlayerClient, but no harm will be done if the values are there)
-
-** If you have any issues, please contact our 24/7 support: +45 25 36 00 09 **
+See [howtorun.md](howtorun.md) for detailed instructions on installation and how to run the game.
 
 # References 
 1. https://ngrok.com/docs/universal-gateway/tcp
